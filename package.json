@@ -1,9 +1,9 @@
 {
-  "name": "twitch-bot-framework",
-  "version": "1.0.3",
+  "name": "tfxjs",
+  "version": "1.0.0",
   "description": "Framework for creating a bot for twitch",
   "author": "kajahl",
-  "homepage": "https://github.com/kajahl/twitch-bot-framework",
+  "homepage": "https://github.com/tfxjs/tfxjs",
   "license": "CC-BY-NC-SA-4.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -13,7 +13,11 @@
     "bot",
     "framework",
     "chatbot",
-    "api"
+    "api",
+    "tfxjs",
+    "chat",
+    "bot",
+    "commands"
   ],
   "files": [
     "dist"

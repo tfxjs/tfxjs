@@ -1,6 +1,6 @@
 ### NOTICE
 
-**Twitch Bot Framework**
+**TFxJS // Twitch Bot Framework**
 
 Copyright (C) 2024 kajahl  
 All rights reserved.
