@@ -31,9 +31,7 @@ export default class ChatBotModule {
                 { token: DINames.TokenRepositoryProvider, useClass: TokenRepositoryProvider },
                 { token: DINames.TokenService, useClass: TokenService },
                 { token: DINames.EventSubClient, useClass: EventSubClient },
-                { token: DINames.APIClient, useClass: APIClient },
-                // TODO: Move to RateLimiterModule - use rate limiter only if configured (otherwise skip rate limiting)
-                { token: DINames.RateLimiterService, useClass: RateLimiterService }
+                { token: DINames.APIClient, useClass: APIClient }
             ]
         };
     }

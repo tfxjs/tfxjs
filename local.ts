@@ -13,6 +13,7 @@ import ChatBotModule from './src/modules/ChatBot.module';
 import CommandsModule from './src/modules/Commands.module';
 import ListenersModule from './src/modules/Listeners.module';
 import CacheModule from './src/modules/Cache.module';
+import APIRateLimiterModule from './src/modules/APIRateLimiter.module';
 
 dotenv.config();
 
@@ -75,7 +76,8 @@ class ChannelOptionsProvider implements IChannelOptionsProvider<ChannelOptionsEx
         ListenersModule.forRoot({
             listeners: [CounterListener, ShowMessageListener],
         }),
-        CacheModule.forRoot()
+        CacheModule.forRoot(),
+        APIRateLimiterModule.forRoot(),
     ],
     log: {
         levels: [LogLevel.INFO, LogLevel.NORMAL, LogLevel.ERROR, LogLevel.WARN, LogLevel.DEBUG],
