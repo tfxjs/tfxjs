@@ -38,7 +38,7 @@ export class TokenService {
         }
 
         // else: Generate new token
-        this.logger.log(`AppToken is expired or not saved. Requesting new app access token...`);
+        this.logger.debug(`AppToken is expired or not saved. Requesting new app access token...`);
         const accessTokenRequestConfig = new AccessTokenRequestBuilder()
             .setClientId(this.config.getClientId())
             .setClientSecret(this.config.getClientSecret())

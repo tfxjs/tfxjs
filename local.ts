@@ -12,6 +12,7 @@ import ShowMessageListener from './src/example/listeners/ShowMessage.listener';
 import ChatBotModule from './src/modules/ChatBot.module';
 import CommandsModule from './src/modules/Commands.module';
 import ListenersModule from './src/modules/Listeners.module';
+import CacheModule from './src/modules/Cache.module';
 
 dotenv.config();
 
@@ -74,6 +75,7 @@ class ChannelOptionsProvider implements IChannelOptionsProvider<ChannelOptionsEx
         ListenersModule.forRoot({
             listeners: [CounterListener, ShowMessageListener],
         }),
+        CacheModule.forRoot()
     ],
     log: {
         levels: [LogLevel.INFO, LogLevel.NORMAL, LogLevel.ERROR, LogLevel.WARN, LogLevel.DEBUG],

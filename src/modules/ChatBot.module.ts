@@ -32,9 +32,6 @@ export default class ChatBotModule {
                 { token: DINames.TokenService, useClass: TokenService },
                 { token: DINames.EventSubClient, useClass: EventSubClient },
                 { token: DINames.APIClient, useClass: APIClient },
-                // TODO: Move to CacheModule - use cache only if configured (otherwise use API Directly)
-                { token: DINames.TwitchUserCacheFetchStrategy, useClass: TwitchUserCacheFetchStrategy },
-                { token: DINames.TwitchUserCache, useClass: TwitchUserCache },
                 // TODO: Move to RateLimiterModule - use rate limiter only if configured (otherwise skip rate limiting)
                 { token: DINames.RateLimiterService, useClass: RateLimiterService }
             ]
