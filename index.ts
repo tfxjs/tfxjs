@@ -98,7 +98,7 @@ import { IChatMessage, Message, MessageFragment, MessageFramgentType, Cheermote,
 //   Token Repository Types
 // ==========================
 
-import { ITokenRepository } from './src/types/Token.repository.types';
+import { ITokenRepositoryProvider } from './src/types/Token.repository.types';
 
 // ==========================
 //   Predefined Strategies
@@ -124,8 +124,19 @@ import { ChannelOptionsProvider } from './src/providers/ChannelOptions.provider'
 // ============================
 
 import { TwitchBot } from './src/decorators/TwitchBot.decorator';
-import { ITwitchBotConfig } from './src/decorators/TwitchBot.decorator';
 import { LogLevel } from './src/utils/Logger';
+import { ITwitchBotOptions } from './src/decorators/TwitchBot.decorator';
+
+// ============================
+//   Module Types
+// ============================
+
+import { IModuleDefinition } from './src/types/Module.types';
+import ChatBotModule, { ChatBotModuleConfig } from './src/modules/ChatBot.module';
+import CommandsModule, { CommandsModuleForRootConfig, CommandsModuleForFeatureConfig } from './src/modules/Commands.module';
+import ListenersModule, { ListenersModuleConfig } from './src/modules/Listeners.module';
+import APIRateLimiterModule, { APIRateLimiterModuleConfig } from './src/modules/APIRateLimiter.module';
+import CacheModule, { CacheModuleConfig } from './src/modules/Cache.module';
 
 // ============================
 //   Exports
@@ -202,7 +213,7 @@ export {
     IChatMessage, Message, MessageFragment, MessageFramgentType, Cheermote, Emote, Mention, MessageType, Cheer, Reply,
 
     // Token Repository Types
-    ITokenRepository,
+    ITokenRepositoryProvider,
 
     // Predefined Strategies
     InMemoryTokenRepository,
@@ -214,5 +225,13 @@ export {
     IChannelOptionsProvider, TChannelOptions, ChannelOptionsProvider,
 
     // Main TwitchBot Decorator
-    TwitchBot, ITwitchBotConfig, LogLevel
+    TwitchBot, ITwitchBotOptions, LogLevel,
+
+    // Module Types
+    IModuleDefinition,
+    ChatBotModule, ChatBotModuleConfig,
+    CommandsModule, CommandsModuleForRootConfig, CommandsModuleForFeatureConfig,
+    ListenersModule, ListenersModuleConfig,
+    APIRateLimiterModule, APIRateLimiterModuleConfig,
+    CacheModule, CacheModuleConfig
 }
