@@ -15,6 +15,7 @@ APIClient służy TYLKO do wywołań z tokenem userId (czyli użytkownika bota) 
 
 */
 
+@Service(DINames.APIClient)
 export default class APIClient {
     private clientId: string;
     private userId: string;
@@ -23,12 +24,10 @@ export default class APIClient {
     constructor(
         @Inject(DINames.ConfigService) readonly config: ConfigService,
         @Inject(DINames.TokenService) private readonly tokenService: TokenService,
-        @Inject(DINames.LoggerFactory) readonly loggerFactory: LoggerFactory
     ) {
-        this.logger = loggerFactory.createLogger('APIClient');
-        const options = config.getConfig();
-        this.clientId = options.clientId;
-        this.userId = options.userId;
+        this.logger = LoggerFactory.createLogger('APIClient');
+        this.clientId = config.getClientId();
+        this.userId = config.getUserId();
         this.logger.debug('Initialized');
     }
 

@@ -22,12 +22,15 @@ export enum ANSI_COLORS {
     black = "\x1b[30m"
 };
 
-export class LoggerFactory {
-    constructor(
-        @Inject(DINames.ConfigService) private readonly configService: ConfigService
-    ) {}
 
-    public createLogger(name: string, nameColor: ANSI_COLORS = ANSI_COLORS.cyan, messageColor: ANSI_COLORS = ANSI_COLORS.white): Logger {
+export class LoggerFactory {
+    private static configService: ConfigService | null = null;
+
+    public static setConfig(configService: ConfigService): void {
+        this.configService = configService
+    }
+
+    public static createLogger(name: string, nameColor: ANSI_COLORS = ANSI_COLORS.cyan, messageColor: ANSI_COLORS = ANSI_COLORS.white): Logger {
         return new Logger(name, nameColor, messageColor, this.configService);
     }
 }

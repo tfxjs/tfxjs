@@ -1,4 +1,4 @@
-import Container, { Inject } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
@@ -8,6 +8,7 @@ import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
 
+@Service(DINames.ChatCommandsService)
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
     private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, ChatCommandDecoratorOptions>();
@@ -29,7 +30,7 @@ export default class ChatCommandsService {
             id: target,
             factory: () => new target(),
             transient: options.transistent,
-            enabled: false, // Default disabled (enable by setting in TwitchBotFramework)
+            enabled: false, // Default disabled (enable by passing the command class to the constructor)
         });
 
         const instance = ChatCommandsService.chatCommandsContainer.get(target) as ChatCommandInstance;
@@ -58,9 +59,15 @@ export default class ChatCommandsService {
         @Inject(DINames.APIClient) private readonly apiClient: APIClient,
         @Inject(DINames.ChannelOptionsProvider) private readonly channelOptionsProvider: ChannelOptionsProvider,
         @Inject(DINames.ChatDataInjectorService) private readonly chatDataInjector: ChatDataInjectorService,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
+        @Inject(DINames.Commands) commands: ChatCommandExecution[]
     ) {
-        this.logger = loggerFactory.createLogger('ChatCommandsService');
+        this.logger = LoggerFactory.createLogger('ChatCommandsService');
+
+        commands.forEach((command) => {
+            ChatCommandsService.getChatCommandsContainer().enable(command);
+        });
+
+        this.logger.debug(`Initialized`);
     }
 
     getCommandRegistry(): GeneralRegistry<ChatCommandInstance, ChatCommandDecoratorOptions> {
@@ -89,7 +96,7 @@ export default class ChatCommandsService {
             this.logger.debug(`Ignoring message ${data.message_id} (#${data.broadcaster_user_login}) - Missing prefix '${commandPrefix}'`);
             return;
         }
-       
+
         const keywords = this.getAllKeywords();
 
         const message = data.message.text;
@@ -118,8 +125,7 @@ export default class ChatCommandsService {
                 const guardResult = await instance.guard(...args);
                 if (!guardResult.canAccess) {
                     this.logger.log(`Guard failed for command ${command.entry.options.name} for user ${data.chatter_user_login} in channel ${data.broadcaster_user_login} with reason: ${guardResult.message}`);
-                    if (guardResult.message?.length != 0)
-                        this.apiClient.sendMessage(data.broadcaster_user_id, guardResult.message || "You cannot execute this command!", data.message_id)
+                    if (guardResult.message?.length != 0) this.apiClient.sendMessage(data.broadcaster_user_id, guardResult.message || 'You cannot execute this command!', data.message_id);
                     return;
                 }
             }

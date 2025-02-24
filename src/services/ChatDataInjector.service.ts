@@ -1,4 +1,4 @@
-import Container, { Inject } from "typedi";
+import Container, { Inject, Service } from "typedi";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import { ChatDataType, ChatDataTypeMap } from "../types/ChatDataInjector.types";
@@ -7,13 +7,12 @@ import {ChatterUser, PartialTwitchUser, TwitchUser} from "../objects/TwitchUser.
 import {ChatMessage, TwitchChatMessage} from "../objects/ChatMessage.object";
 import { ChannelOptionsProvider } from "../providers/ChannelOptions.provider";
 
+@Service(DINames.ChatDataInjectorService)
 export default class ChatDataInjectorService {
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('ChatDataInjector');
+    constructor() {
+        this.logger = LoggerFactory.createLogger('ChatDataInjector');
         this.logger.debug('Initialized');
     }
 
