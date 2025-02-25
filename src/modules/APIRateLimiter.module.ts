@@ -1,11 +1,9 @@
 import RateLimiterService from '../services/RateLimiter.service';
-import { IModuleDefinition } from '../types/Module.types';
+import { APIRateLimiterModuleForRootConfig, IModuleDefinition } from '../types/Module.types';
 import DINames from '../utils/DI.names';
 
-export type APIRateLimiterModuleConfig = {}
-
 export default class APIRateLimiterModule {
-    static forRoot(config: APIRateLimiterModuleConfig = {}): IModuleDefinition {
+    static forRoot(config: APIRateLimiterModuleForRootConfig = {}): IModuleDefinition {
         return {
             module: APIRateLimiterModule,
             providers: [

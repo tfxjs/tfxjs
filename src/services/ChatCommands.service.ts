@@ -2,18 +2,19 @@ import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
-import { ChatCommandDecoratorOptions, ChatCommandExecution, ChatCommandInstance } from '../types/ChatCommand.types';
+import { ChatCommandExecution, ChatCommandInstance } from '../types/ChatCommand.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
 import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
+import { CommandsModuleForFeatureConfig } from '../types/Module.types';
 
 @Service(DINames.ChatCommandsService)
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
-    private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, ChatCommandDecoratorOptions>();
+    private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, CommandsModuleForFeatureConfig>();
 
-    static getCommandRegistry(): GeneralRegistry<ChatCommandInstance, ChatCommandDecoratorOptions> {
+    static getCommandRegistry(): GeneralRegistry<ChatCommandInstance, CommandsModuleForFeatureConfig> {
         return this.chatCommandRegistry;
     }
 
@@ -21,7 +22,7 @@ export default class ChatCommandsService {
         return this.chatCommandsContainer;
     }
 
-    static registerCommand(target: any, options: Required<ChatCommandDecoratorOptions>): void {
+    static registerCommand(target: any, options: Required<CommandsModuleForFeatureConfig>): void {
         const logger = new Logger('ChatCommandsService:RegisterCommand');
         logger.log(`Registering command ${options.name}`);
 
@@ -70,7 +71,7 @@ export default class ChatCommandsService {
         this.logger.debug(`Initialized`);
     }
 
-    getCommandRegistry(): GeneralRegistry<ChatCommandInstance, ChatCommandDecoratorOptions> {
+    getCommandRegistry(): GeneralRegistry<ChatCommandInstance, CommandsModuleForFeatureConfig> {
         return ChatCommandsService.chatCommandRegistry;
     }
 
@@ -150,7 +151,7 @@ export default class ChatCommandsService {
         }
     }
 
-    private getKeywordsCommandMap(): { keywords: string[]; entry: GeneralRegistryEntry<ChatCommandInstance, ChatCommandDecoratorOptions> }[] {
+    private getKeywordsCommandMap(): { keywords: string[]; entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig> }[] {
         const commands = this.getCommandRegistry().getRegisteredEntries();
         const map = commands.map((entry) => {
             return {
@@ -161,7 +162,7 @@ export default class ChatCommandsService {
         return map;
     }
 
-    private getKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, ChatCommandDecoratorOptions>): string[] {
+    private getKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig>): string[] {
         const keywords = [entry.options.keyword, ...entry.options.aliases].map((keyword) => {
             if (entry.options.ignoreCase) keyword = keyword.toLowerCase();
             return keyword;

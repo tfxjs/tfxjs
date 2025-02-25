@@ -68,9 +68,6 @@ import ShowMessageListener from './src/example/listeners/ShowMessage.listener';
 import { ChatCommand } from './src/decorators/ChatCommand.decorator';
 import { ChatListener } from './src/decorators/ChatListener.decorator';
 
-import { ChatCommandDecoratorOptions } from './src/types/ChatCommand.types';
-import { ChatListenerDecoratorOptions } from './src/types/ChatListener.types';
-
 import {
     Raw, 
     SenderData, Sender, 
@@ -132,11 +129,18 @@ import { ITwitchBotOptions } from './src/decorators/TwitchBot.decorator';
 // ============================
 
 import { IModuleDefinition } from './src/types/Module.types';
-import ChatBotModule, { ChatBotModuleConfig } from './src/modules/ChatBot.module';
-import CommandsModule, { CommandsModuleForRootConfig, CommandsModuleForFeatureConfig } from './src/modules/Commands.module';
-import ListenersModule, { ListenersModuleConfig } from './src/modules/Listeners.module';
-import APIRateLimiterModule, { APIRateLimiterModuleConfig } from './src/modules/APIRateLimiter.module';
-import CacheModule, { CacheModuleConfig } from './src/modules/Cache.module';
+import CommandsModule from './src/modules/Commands.module';
+import ListenersModule from './src/modules/Listeners.module';
+import APIRateLimiterModule from './src/modules/APIRateLimiter.module';
+import ChatBotModule from './src/modules/ChatBot.module';
+import CacheModule from './src/modules/Cache.module';
+import { 
+    APIRateLimiterModuleForRootConfig, APIRateLimiterModuleForFeatureConfig, 
+    CommandsModuleForRootConfig, CommandsModuleForFeatureConfig, 
+    ListenersModuleForRootConfig, ListenersModuleForFeatureConfig,
+    ChatBotModuleForRootConfig, ChatBotModuleForFeatureConfig,
+    CacheModuleForRootConfig, CacheModuleForFeatureConfig
+} from './src/types/Module.types';
 
 // ============================
 //   Exports
@@ -194,9 +198,6 @@ export {
     ChatCommand,
     ChatListener,
 
-    ChatCommandDecoratorOptions,
-    ChatListenerDecoratorOptions,
-
     Raw, 
     SenderData, Sender, 
     MessageUser,
@@ -229,9 +230,9 @@ export {
 
     // Module Types
     IModuleDefinition,
-    ChatBotModule, ChatBotModuleConfig,
+    ChatBotModule, ChatBotModuleForRootConfig, ChatBotModuleForFeatureConfig,
     CommandsModule, CommandsModuleForRootConfig, CommandsModuleForFeatureConfig,
-    ListenersModule, ListenersModuleConfig,
-    APIRateLimiterModule, APIRateLimiterModuleConfig,
-    CacheModule, CacheModuleConfig
+    ListenersModule, ListenersModuleForRootConfig, ListenersModuleForFeatureConfig,
+    APIRateLimiterModule, APIRateLimiterModuleForRootConfig, APIRateLimiterModuleForFeatureConfig,
+    CacheModule, CacheModuleForRootConfig, CacheModuleForFeatureConfig,
 }

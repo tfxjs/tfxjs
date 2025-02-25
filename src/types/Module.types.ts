@@ -56,3 +56,50 @@ export type MappedDINames = {
     [DINames.Listeners]: ChatListenerExecution[];
     [DINames.Commands]: ChatCommandExecution[];
 };
+
+// Commands Module
+
+export type CommandsModuleForRootConfig = {
+    commands: (new () => ChatCommandExecution)[];
+};
+
+export type CommandsModuleForFeatureConfig = {
+    name: string;
+    keyword: string;
+    aliases?: string[];
+    ignoreCase?: boolean;
+    transistent?: boolean;
+}
+
+// Listeners Module
+
+export type ListenersModuleForRootConfig = {
+    listeners: (new () => ChatListenerExecution)[];
+};
+
+export type ListenersModuleForFeatureConfig = {
+    name: string;
+    transient?: boolean;
+}
+
+// APIRateLimiter Module
+
+export type APIRateLimiterModuleForRootConfig = {};
+
+export type APIRateLimiterModuleForFeatureConfig = {}
+
+// Cache Module
+
+export type CacheModuleForRootConfig = {}
+
+export type CacheModuleForFeatureConfig = {}
+
+// ChatBot Module
+
+export type ChatBotModuleForRootConfig = {
+    listenChannels: ClassOrValue<DINames.UserDefinedListenChannelsProvider>;
+    channelOptions: ClassOrValue<DINames.UserDefinedChannelOptionsProvider>;
+    tokenRepository: ClassOrValue<DINames.UserDefinedTokenRepositoryProvider>;
+}
+
+export type ChatBotModuleForFeatureConfig = {}

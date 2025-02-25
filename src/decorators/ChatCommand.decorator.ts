@@ -17,12 +17,12 @@ Przykład użycia:
 
 // Decorator
 import ChatCommandsService from "../services/ChatCommands.service";
-import { ChatCommandDecoratorOptions } from '../types/ChatCommand.types';
+import { CommandsModuleForFeatureConfig } from "../types/Module.types";
 
 // Decorator
-export function ChatCommand(options: ChatCommandDecoratorOptions): ClassDecorator {
+export function ChatCommand(options: CommandsModuleForFeatureConfig): ClassDecorator {
     return function (target: any) {
-        const allOptions: Required<ChatCommandDecoratorOptions> = {
+        const allOptions: Required<CommandsModuleForFeatureConfig> = {
             name: options.name,
             keyword: options.keyword,
             aliases: options.aliases ?? [],

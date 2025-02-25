@@ -1,23 +1,14 @@
-import TwitchUserCacheFetchStrategy from '../cache/fetchers/TwitchUser.cache.fetch.strategy';
-import TwitchUserCache from '../cache/TwitchUser.cache';
 import APIClient from '../clients/Api.client';
 import EventSubClient from '../clients/EventSub.client';
 import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
 import TokenRepositoryProvider from '../providers/Token.repository.provider';
-import RateLimiterService from '../services/RateLimiter.service';
 import { TokenService } from '../services/Token.service';
-import { ClassOrValue, IModuleDefinition, Provider } from '../types/Module.types';
+import { ChatBotModuleForRootConfig, IModuleDefinition } from '../types/Module.types';
 import DINames from '../utils/DI.names';
 
-export type ChatBotModuleConfig = {
-    listenChannels: ClassOrValue<DINames.UserDefinedListenChannelsProvider>;
-    channelOptions: ClassOrValue<DINames.UserDefinedChannelOptionsProvider>;
-    tokenRepository: ClassOrValue<DINames.UserDefinedTokenRepositoryProvider>;
-}
-
 export default class ChatBotModule {
-    static forRoot(config: ChatBotModuleConfig): IModuleDefinition {
+    static forRoot(config: ChatBotModuleForRootConfig): IModuleDefinition {
         return {
             module: ChatBotModule,
             userProviders: [

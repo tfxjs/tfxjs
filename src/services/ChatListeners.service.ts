@@ -1,19 +1,18 @@
 import { Inject, Service } from 'typedi';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
-import { ChatListenerDecoratorOptions, ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
+import { ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import DINames from '../utils/DI.names';
-import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
-import { listeners } from 'process';
+import { ListenersModuleForFeatureConfig } from '../types/Module.types';
 
 @Service(DINames.ChatListenersService)
 export default class ChatListenersService {
     private static readonly chatListenersContainer = GeneralContainer.getInstance<GeneralFactory, ChatListenerExecution>();
-    private static readonly chatListenerRegistry = GeneralRegistry.getInstance<ChatListenerInstance, ChatListenerDecoratorOptions>();
+    private static readonly chatListenerRegistry = GeneralRegistry.getInstance<ChatListenerInstance, ListenersModuleForFeatureConfig>();
 
-    static getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ChatListenerDecoratorOptions> {
+    static getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ListenersModuleForFeatureConfig> {
         return this.chatListenerRegistry;
     }
 
@@ -21,7 +20,7 @@ export default class ChatListenersService {
         return this.chatListenersContainer;
     }
 
-    static registerListener(target: any, options: Required<ChatListenerDecoratorOptions>): void {
+    static registerListener(target: any, options: Required<ListenersModuleForFeatureConfig>): void {
         const logger = new Logger('ChatListenerDecorator:RegisterListener');
         logger.debug(`Registering listener ${options.name}`);
 
@@ -68,7 +67,7 @@ export default class ChatListenersService {
         this.logger.debug('Initialized');
     }
 
-    getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ChatListenerDecoratorOptions> {
+    getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ListenersModuleForFeatureConfig> {
         return ChatListenersService.chatListenerRegistry;
     }
 

@@ -6,13 +6,6 @@ type TorPromiseT<T> = T | Promise<T>;
 
 export type ChatListenerInstance = ChatListenerExecution;
 
-// Decorator
-
-export type ChatListenerDecoratorOptions = {
-    name: string;
-    transient?: boolean;
-};
-
 // Execution
 
 export type ChatListenerExecution = {
