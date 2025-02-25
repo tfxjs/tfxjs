@@ -7,10 +7,10 @@ export default class IndividualRateLimiterService {
     private readonly logger: Logger;
 
     constructor(
-        private readonly id: string,
-        loggerFactory: LoggerFactory
+        private readonly id: string
     ) {
-        this.logger = loggerFactory.createLogger(`IndividualRateLimiterService:${id}`);
+        this.logger = LoggerFactory.createLogger(`IndividualRateLimiterService:${id}`);
+        this.logger.debug('Initialized');
     }
 
     private state: TwitchRatelimitState = {

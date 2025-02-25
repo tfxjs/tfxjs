@@ -68,9 +68,6 @@ import ShowMessageListener from './src/example/listeners/ShowMessage.listener';
 import { ChatCommand } from './src/decorators/ChatCommand.decorator';
 import { ChatListener } from './src/decorators/ChatListener.decorator';
 
-import { ChatCommandDecoratorOptions } from './src/types/ChatCommand.types';
-import { ChatListenerDecoratorOptions } from './src/types/ChatListener.types';
-
 import {
     Raw, 
     SenderData, Sender, 
@@ -98,7 +95,7 @@ import { IChatMessage, Message, MessageFragment, MessageFramgentType, Cheermote,
 //   Token Repository Types
 // ==========================
 
-import { ITokenRepository } from './src/types/Token.repository.types';
+import { ITokenRepositoryProvider } from './src/types/Token.repository.types';
 
 // ==========================
 //   Predefined Strategies
@@ -124,8 +121,26 @@ import { ChannelOptionsProvider } from './src/providers/ChannelOptions.provider'
 // ============================
 
 import { TwitchBot } from './src/decorators/TwitchBot.decorator';
-import { ITwitchBotConfig } from './src/decorators/TwitchBot.decorator';
 import { LogLevel } from './src/utils/Logger';
+import { ITwitchBotOptions } from './src/decorators/TwitchBot.decorator';
+
+// ============================
+//   Module Types
+// ============================
+
+import { IModuleDefinition } from './src/types/Module.types';
+import CommandsModule from './src/modules/Commands.module';
+import ListenersModule from './src/modules/Listeners.module';
+import APIRateLimiterModule from './src/modules/APIRateLimiter.module';
+import ChatBotModule from './src/modules/ChatBot.module';
+import CacheModule from './src/modules/Cache.module';
+import { 
+    APIRateLimiterModuleForRootConfig, APIRateLimiterModuleForFeatureConfig, 
+    CommandsModuleForRootConfig, CommandsModuleForFeatureConfig, 
+    ListenersModuleForRootConfig, ListenersModuleForFeatureConfig,
+    ChatBotModuleForRootConfig, ChatBotModuleForFeatureConfig,
+    CacheModuleForRootConfig, CacheModuleForFeatureConfig
+} from './src/types/Module.types';
 
 // ============================
 //   Exports
@@ -183,9 +198,6 @@ export {
     ChatCommand,
     ChatListener,
 
-    ChatCommandDecoratorOptions,
-    ChatListenerDecoratorOptions,
-
     Raw, 
     SenderData, Sender, 
     MessageUser,
@@ -202,7 +214,7 @@ export {
     IChatMessage, Message, MessageFragment, MessageFramgentType, Cheermote, Emote, Mention, MessageType, Cheer, Reply,
 
     // Token Repository Types
-    ITokenRepository,
+    ITokenRepositoryProvider,
 
     // Predefined Strategies
     InMemoryTokenRepository,
@@ -214,5 +226,13 @@ export {
     IChannelOptionsProvider, TChannelOptions, ChannelOptionsProvider,
 
     // Main TwitchBot Decorator
-    TwitchBot, ITwitchBotConfig, LogLevel
+    TwitchBot, ITwitchBotOptions, LogLevel,
+
+    // Module Types
+    IModuleDefinition,
+    ChatBotModule, ChatBotModuleForRootConfig, ChatBotModuleForFeatureConfig,
+    CommandsModule, CommandsModuleForRootConfig, CommandsModuleForFeatureConfig,
+    ListenersModule, ListenersModuleForRootConfig, ListenersModuleForFeatureConfig,
+    APIRateLimiterModule, APIRateLimiterModuleForRootConfig, APIRateLimiterModuleForFeatureConfig,
+    CacheModule, CacheModuleForRootConfig, CacheModuleForFeatureConfig,
 }

@@ -1,17 +1,23 @@
-import { AppToken, ITokenRepository, UserToken } from "../../types/Token.repository.types";
+import { AppToken, ITokenRepositoryProvider, UserToken } from "../../types/Token.repository.types";
 import dotenv from 'dotenv';
+import { Logger, LoggerFactory } from "../../utils/Logger";
 dotenv.config();
 
-export default class InMemoryTokenRepository implements ITokenRepository {
+export default class InMemoryTokenRepository implements ITokenRepositoryProvider {
+    private logger: Logger;
     private appAccessToken: AppToken | null = null;
     private userAccessTokens: Map<string, UserToken> = new Map();
     private userRefreshTokens: Map<string, string> = new Map();
 
-    constructor() {
-        const userId = process.env.USER_ID;
-        const userRefreshToken = process.env.USER_REFRESH_TOKEN;
-        if(!userId || !userRefreshToken) throw new Error('USER_ID and USER_REFRESH_TOKEN environment variables must be set if using InMemoryTokenRepository');
+    constructor(userId: string, userRefreshToken: string) {
+        this.logger = LoggerFactory.createLogger('InMemoryTokenRepository');
+        if(!userId || !userRefreshToken) {
+            const message = 'User ID and refresh token must be provided';
+            this.logger.error(message);
+            throw new Error(message);
+        }
         this.userRefreshTokens.set(userId, userRefreshToken);
+        this.logger.info(`Initialized with user ID: ${userId} and refresh token: ${this.logger.censor(userRefreshToken)}`);
     }
 
     getAppToken(): Promise<AppToken | null> {

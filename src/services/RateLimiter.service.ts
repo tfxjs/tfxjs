@@ -24,23 +24,23 @@ If you receive HTTP status code 429, use the Ratelimit-Reset header to learn how
 */
 
 
+import { Service } from "typedi";
 import { Logger, LoggerFactory } from "../utils/Logger";
-import { Inject } from "typedi";
-import DINames from "../utils/DI.names";
 import IndividualRateLimiterService from "./IndividualRateLimiter.service";
+import DINames from "../utils/DI.names";
 
+@Service(DINames.RateLimiterService)
 export default class RateLimiterService {
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.LoggerFactory) private readonly loggerFactory: LoggerFactory
-    ) {
-        this.logger = this.loggerFactory.createLogger('RateLimiterService');
+    constructor() {
+        this.logger = LoggerFactory.createLogger('RateLimiterService');
+        this.logger.debug('Initialized');
     }
 
     private instances: Map<string, IndividualRateLimiterService> = new Map();
     forUser(userId: string | 'app') {
-        if(!this.instances.has(userId)) this.instances.set(userId, new IndividualRateLimiterService(userId, this.loggerFactory));
+        if(!this.instances.has(userId)) this.instances.set(userId, new IndividualRateLimiterService(userId));
         return this.instances.get(userId) as IndividualRateLimiterService;
     }
 

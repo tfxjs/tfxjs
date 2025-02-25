@@ -12,47 +12,27 @@ import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
 import { ListenChannelSubscriptionResult } from '../types/ListenChannels.provider.types';
 import NotFoundError from '../errors/NotFound.error';
-import ChatCommandsService from '../services/ChatCommands.service';
-import ChatListenersService from '../services/ChatListeners.service';
 import CreateEventSubSubscriptionRequestConfigBuilder from '../builders/api/CreateEventSubSubscription.request.builder';
 import GetEventSubSubscriptionsRequestConfigBuilder, { GetEventSubSubscriptionsResponse } from '../builders/api/GetEventSubSubscriptions.request.builder';
 import DeleteEventSubSubscriptionRequestConfigBuilder from '../builders/api/DeleteEventSubSubscription.request.builder';
 import { UsableToken } from '../types/Token.repository.types';
 
+@Service(DINames.EventSubClient)
 export default class EventSubClient {
-    private readonly clientId: string;
-    private readonly userId: string;
     private readonly logger: Logger;
-    private websocketClient: WebsocketClient;
 
     constructor(
         @Inject(DINames.ConfigService) private readonly config: ConfigService,
         @Inject(DINames.TokenService) private readonly tokenService: TokenService,
         @Inject(DINames.ListenChannelsProvider) private readonly listenChannelsProvider: ListenChannelsProvider,
-        @Inject(DINames.ChatCommandsService) chatCommandsService: ChatCommandsService,
-        @Inject(DINames.ChatListenersService) chatListenersService: ChatListenersService,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
+        @Inject(DINames.WebsocketClient) private readonly websocketClient: WebsocketClient,
     ) {
-        this.logger = loggerFactory.createLogger('EventSubClient');
-        const options = config.getConfig();
-        this.clientId = options.clientId;
-        this.userId = options.userId;
-        this.websocketClient = new WebsocketClient(this, this.onWebsocketConnected.bind(this), this.onWebsocketDisconnected.bind(this), chatCommandsService, chatListenersService, loggerFactory);
+        this.logger = LoggerFactory.createLogger('EventSubClient');
         this.logger.debug('Initialized');
     }
 
-    // Komunikacja z websocketem
-    private weboscketSessionId: string | null = null;
-    private async onWebsocketConnected(sessionId: string) {
-        this.weboscketSessionId = sessionId;
-        this.setupChatListeners();
-    }
-    private async onWebsocketDisconnected() {
-        this.weboscketSessionId = null;
-    }
-
     // Obsługa kanałów
-    private async setupChatListeners() {
+    async setupChatListeners() {
         this.listenChannelsProvider.onChannelsUpdated(this.listenChannelsProviderCallback.bind(this));
         this.listenChannelsProvider.refreshChannels();
     }
@@ -121,8 +101,9 @@ export default class EventSubClient {
      * @throws Error if subscription failed
      */
     private async subscribe<T extends MappedTwitchEventId>(type: T, condition: TwitchEventData<T>['condition'], version: TwitchEventData<T>['version'], token: UsableToken) {
-        if (!this.weboscketSessionId) throw new Error('Websocket session ID not found');
-        const requestConfig = new CreateEventSubSubscriptionRequestConfigBuilder().setClientId(this.clientId).setAccessToken(token).setType(type).setCondition(condition).setVersion(version).setSessionId(this.weboscketSessionId).build();
+        const sessionId = this.websocketClient.getSessionId();
+        if (!sessionId) throw new Error('Websocket session ID not found');
+        const requestConfig = new CreateEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setType(type).setCondition(condition).setVersion(version).setSessionId(sessionId).build();
         const response = await axios.request<CreateSubscriptionResponse>(requestConfig);
         if (response.status !== 202) {
             const errorMessage = `Failed to subscribe to event ${type} with condition ${JSON.stringify(condition)}`;
@@ -139,7 +120,7 @@ export default class EventSubClient {
 
         const userTokenObject = await this.tokenService.getUserTokenById(userId);
         if (!userTokenObject) throw new NotFoundError('User token not found');
-        const requestBuilder = new GetEventSubSubscriptionsRequestConfigBuilder().setClientId(this.clientId).setAccessToken(userTokenObject);
+        const requestBuilder = new GetEventSubSubscriptionsRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(userTokenObject);
         if(options.userId !== undefined) requestBuilder.setUserId(options.userId);
         if(options.status !== undefined) requestBuilder.setStatus(options.status);
         if(options.type !== undefined) requestBuilder.setType(options.type);
@@ -162,7 +143,7 @@ export default class EventSubClient {
      * @throws Error if unsubscription failed
      */
     private async unsubscribe(id: string, token: UsableToken) {
-        const requestConfig = new DeleteEventSubSubscriptionRequestConfigBuilder().setClientId(this.clientId).setAccessToken(token).setId(id).build();
+        const requestConfig = new DeleteEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setId(id).build();
         const response = await axios.request<DeleteSubscriptionResponse>(requestConfig);
         if (response.status !== 204) {
             const errorMessage = `[${response.status}] Failed to unsubscribe from event ${id}`;
@@ -179,7 +160,7 @@ export default class EventSubClient {
      * Subscribes to chat events
      * //TODO
      */
-    async listenChat(channelId: string, asUserId: string = this.userId) {
+    async listenChat(channelId: string, asUserId: string = this.config.getUserId()) {
         const userTokenObject = await this.tokenService.getUserTokenWithScopesById(asUserId);
         if (!userTokenObject) throw new Error('User token not found');
         /*
@@ -221,7 +202,7 @@ export default class EventSubClient {
      * Unsubscribes from chat events
      * //TODO
      */
-    async unlistenChat(channelId: string, asUserId: string = this.config.getConfig().userId) {
+    async unlistenChat(channelId: string, asUserId: string = this.config.getUserId()) {
         // TODO: Cache dla subskrypcji
         const data = await this.list(asUserId, { status: 'enabled' });
 

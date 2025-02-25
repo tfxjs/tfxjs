@@ -6,16 +6,6 @@ type TorPromiseT<T> = T | Promise<T>;
 
 export type ChatCommandInstance = ChatCommandExecutionGuard & ChatCommandPreExecution & ChatCommandExecution & ChatCommandPostExecution;
 
-// Decorator
-
-export type ChatCommandDecoratorOptions = {
-    name: string;
-    keyword: string;
-    aliases?: string[];
-    ignoreCase?: boolean;
-    transistent?: boolean;
-};
-
 // Guard
 
 export type ChatCommandExecutionGuard = {

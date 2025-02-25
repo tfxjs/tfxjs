@@ -2,6 +2,8 @@ import Container from 'typedi';
 import TwitchUserCache from '../cache/TwitchUser.cache';
 import DINames from '../utils/DI.names';
 import { ITwitchUser, IPartialTwitchUser, IChatterUser, Badge, BadgeSetId, TwitchUserType, TwitchUserBroadcasterType } from '../types/twitch/TwitchUser.types';
+import { Logger, LoggerFactory } from '../utils/Logger';
+import APIClient from '../clients/Api.client';
 
 export class PartialTwitchUser {
     constructor(private readonly data: IPartialTwitchUser) {}
@@ -20,12 +22,40 @@ export class PartialTwitchUser {
 }
 
 export class TwitchUser {
-    private readonly cache: TwitchUserCache = Container.get(DINames.TwitchUserCache);
+    private logger: Logger;
+    private _cache: TwitchUserCache | undefined = undefined;
+    private _api: APIClient | undefined = undefined;
 
-    constructor(private readonly id: string) {}
+    private get cache() : TwitchUserCache | undefined  {
+        if(this._cache == null){
+            if(!Container.has(DINames.TwitchUserCache)) {
+                this.logger.debug(`Cache is not defined. Using API to fetch data.`);
+                return;
+            }
+            this._cache = Container.get(DINames.TwitchUserCache);
+        }
+        return this._cache;
+    }
+
+    private get api() : APIClient {
+        if(this._api == null) {
+            if(!Container.has(DINames.APIClient)) throw new Error(`APIClient is not defined.`);
+            this._api = Container.get(DINames.APIClient);
+        }
+        return this._api as APIClient;
+    }
+
+    constructor(private readonly id: string) {
+        this.logger = LoggerFactory.createLogger(`TwitchUser:${id}`);
+    }
 
     private async getCachedUser(): Promise<ITwitchUser> {
-        const user = await this.cache.get(this.id);
+        let user : ITwitchUser | null = null;
+        if(this.cache) {
+            user = await this.cache.get(this.id);
+        } else {
+            user = await this.api.getUserById(this.id);
+        }
         if(user == null) throw new Error('Cannot obtain user data. Check console for more information.');
         return user;
     }

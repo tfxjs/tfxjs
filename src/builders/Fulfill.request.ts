@@ -10,10 +10,10 @@ import { TokenService } from "../services/Token.service";
  * @returns Request builder with the necessary data {@link BaseRequestBuilder}
  */
 export default async function FulfillRequest<T extends BaseRequestBuilder>(requestBuilder: T, useAppTokenIfNull: boolean = true): Promise<T> {
-    const config = (Container.get(DINames.ConfigService) as ConfigService).getConfig();
+    const config = (Container.get(DINames.ConfigService) as ConfigService);
     const tokenService = (Container.get(DINames.TokenService) as TokenService);
 
-    requestBuilder.setClientId(config.clientId);
+    requestBuilder.setClientId(config.getClientId());
     const userId = requestBuilder.getUserIdRelatedToToken();
     if(userId == "") {
         if(!useAppTokenIfNull) return requestBuilder;

@@ -1,10 +1,11 @@
 import { ChatListener } from "../../decorators/ChatListener.decorator";
+import ListenersModule from "../../modules/Listeners.module";
 import { ChatListenerExecution } from "../../types/ChatListener.types";
 
-@ChatListener({
+@ChatListener(ListenersModule.forFeature({
     name: 'Counter',
     transient: false
-})
+}))
 export default class CounterListener implements ChatListenerExecution {
     private messageCount: number = 0;
 

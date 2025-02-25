@@ -3,16 +3,20 @@ import { API, BroadcasterData, ChannelOptions, Mess, MessageUser, OptionsProvide
 import { ChatterUser, PartialTwitchUser } from "../../objects/TwitchUser.object";
 import { ChannelOptionsProvider } from "../../providers/ChannelOptions.provider";
 import { ChatCommandExecution, ChatCommandExecutionGuard, ChatCommandExecutionGuardAvaliableResults, ChatCommandPostExecution, ChatCommandPreExecution } from "../../types/ChatCommand.types";
-import { ChannelOptionsExtend } from "../../../local";
 import { TwitchChatMessage } from "../../objects/ChatMessage.object";
 import APIClient from "../../clients/Api.client";
+import { TChannelOptions } from "../../types/ChannelOptions.provider";
+import CommandsModule from "../../modules/Commands.module";
 
+export type ChannelOptionsExtend = TChannelOptions<{
+    eXampleExecutionCounter: number;
+}>;
 
-@ChatCommand({ 
+@ChatCommand(CommandsModule.forFeature({ 
     name: 'example',
     keyword: 'eXample',
     ignoreCase: false
-})
+}))
 export default class ExampleCommand implements ChatCommandExecutionGuard, ChatCommandPreExecution, ChatCommandExecution, ChatCommandPostExecution {
     async guard(@MessageUser() user: ChatterUser): Promise<ChatCommandExecutionGuardAvaliableResults> {
         if(user.isBroadcaster() || user.isModerator() || user.isVIP()) return { canAccess: true };

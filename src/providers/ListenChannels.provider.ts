@@ -1,44 +1,40 @@
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import { IListenChannelsProvider, ListenChannelsCallback, ListenChannelSubscriptionResult } from '../types/ListenChannels.provider.types';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import ConfigService from '../services/Config.service';
-import { TListenChannelsProvider } from '../decorators/TwitchBot.decorator';
 
-export default class ListenChannelsProvider implements IListenChannelsProvider {
-    private readonly provider: IListenChannelsProvider;
+@Service(DINames.ListenChannelsProvider)
+export default class ListenChannelsProvider {
     private readonly logger: Logger;
     private _lastChannelIds: string[] = [];
 
     constructor(
-        private readonly channelProvider: TListenChannelsProvider,
+        @Inject(DINames.UserDefinedListenChannelsProvider) private readonly channelProvider: IListenChannelsProvider,
         @Inject(DINames.ConfigService) private readonly config: ConfigService,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
     ) {
-        this.logger = loggerFactory.createLogger('ListenChannels');
-        this.provider = new this.channelProvider();
+        this.logger = LoggerFactory.createLogger('ListenChannelsProvider');
         this.setupRefreshInterval();
         this.setupApiCheckInterval();
         this.logger.debug('Initialized');
     }
 
     // Interval for refreshing channels
-    private refreshInterval: NodeJS.Timeout | null = null;
+    private refreshIntervalLoop: NodeJS.Timeout | null = null;
     private setupRefreshInterval(): void {
-        const refreshInterval = this.config.getConfig().listenChannels.refreshInterval;
-        this.refreshInterval = setInterval(() => {
+        this.refreshIntervalLoop = setInterval(() => {
             this.logger.debug(`Interval for refreshing channels`);
             this.refreshChannels();
-        }, refreshInterval);
+        }, this.channelProvider.getRefreshInterval());
     }
 
     // Interval for API check (TODO)
     private apiCheckInterval: NodeJS.Timeout | null = null;
     private setupApiCheckInterval(): void {
-        const apiCheckDelay = this.config.getConfig().listenChannels.refreshInterval / 2;
+        const apiCheckDelay = this.channelProvider.getRefreshInterval() / 2;
         setTimeout(() => {
             if(this.apiCheckInterval) clearInterval(this.apiCheckInterval);
-            const apiCheckInterval = this.config.getConfig().listenChannels.refreshInterval * 4;
+            const apiCheckInterval = this.channelProvider.getRefreshInterval() * 4;
             this.apiCheckInterval = setInterval(() => {
                 this.logger.debug(`Interval for API check`);
                 this.APICheckChannels();
@@ -51,7 +47,7 @@ export default class ListenChannelsProvider implements IListenChannelsProvider {
      * @returns List of channel ids
      */
     async getChannelIds(): Promise<string[]> {
-        const channels = await this.provider.getChannelIds();
+        const channels = await this.channelProvider.getChannelIds();
         const botUserId = this.config.getConfig().userId;
         if(!channels.includes(botUserId)) 
             channels.push(botUserId);

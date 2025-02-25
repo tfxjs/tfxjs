@@ -1,13 +1,14 @@
 import { BroadcasterData, MessageData, MessageUser, Raw, SenderData } from "../../decorators/ChatData.decorators";
 import { ChatListener } from "../../decorators/ChatListener.decorator";
+import ListenersModule from "../../modules/Listeners.module";
 import { ChatMessage } from "../../objects/ChatMessage.object";
 import { ChatterUser, PartialTwitchUser } from "../../objects/TwitchUser.object";
 import { ChatListenerExecution } from "../../types/ChatListener.types";
 
-@ChatListener({
+@ChatListener(ListenersModule.forFeature({
     name: 'ShowMessage',
     transient: true
-})
+}))
 export default class ShowMessageListener implements ChatListenerExecution {
     async execution(
         @SenderData() sender: PartialTwitchUser,

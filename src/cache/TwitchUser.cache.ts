@@ -5,15 +5,15 @@ import LRUCacheStrategy from "./strategies/LRUCache.strategy";
 import { LoggerFactory } from "../utils/Logger";
 import { ITwitchUser } from "../types/twitch/TwitchUser.types";
 
+@Service(DINames.TwitchUserCache)
 export default class TwitchUserCache extends LRUCacheStrategy<ITwitchUser> {
     constructor(
-        @Inject(DINames.TwitchUserCacheFetchStrategy) fetchStrategy: TwitchUserCacheFetchStrategy,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
+        @Inject(DINames.TwitchUserCacheFetchStrategy) fetchStrategy: TwitchUserCacheFetchStrategy
     ) {
         super({
             maxSize: 1000,
             ttl: 60,
             cleanupInterval: 10
-        }, fetchStrategy, loggerFactory.createLogger('TwitchUserCache'));
+        }, fetchStrategy, LoggerFactory.createLogger('TwitchUserCache'));
     }
 }
