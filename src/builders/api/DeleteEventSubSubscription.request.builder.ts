@@ -4,11 +4,8 @@ import BaseRequestBuilder from "./Base.request.builder";
 
 // Typy
 
-export type XXXResponse = {
-    data: {
-        
-    }[]
-}
+// 204 No Content
+export type DeleteEventSubSubscriptionResponse = {}
 
 // Builder
 

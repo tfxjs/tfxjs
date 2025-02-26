@@ -4,7 +4,6 @@ import { TokenService } from '../services/Token.service';
 import { MappedTwitchEventId, TwitchEventData } from '../types/EventSub.types';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import WebsocketClient from './Websocket.client';
-import { CreateSubscriptionResponse, DeleteSubscriptionResponse } from '../types/APIClient.types';
 import TwtichPermissionScope from '../enums/TwitchPermissionScope.enum';
 import { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
@@ -12,9 +11,9 @@ import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
 import { ListenChannelSubscriptionResult } from '../types/ListenChannels.provider.types';
 import NotFoundError from '../errors/NotFound.error';
-import CreateEventSubSubscriptionRequestConfigBuilder from '../builders/api/CreateEventSubSubscription.request.builder';
+import CreateEventSubSubscriptionRequestConfigBuilder, { CreateEventSubSubscriptionResponse } from '../builders/api/CreateEventSubSubscription.request.builder';
 import GetEventSubSubscriptionsRequestConfigBuilder, { GetEventSubSubscriptionsResponse } from '../builders/api/GetEventSubSubscriptions.request.builder';
-import DeleteEventSubSubscriptionRequestConfigBuilder from '../builders/api/DeleteEventSubSubscription.request.builder';
+import DeleteEventSubSubscriptionRequestConfigBuilder, { DeleteEventSubSubscriptionResponse } from '../builders/api/DeleteEventSubSubscription.request.builder';
 import { UsableToken } from '../types/Token.repository.types';
 
 @Service(DINames.EventSubClient)
@@ -104,7 +103,7 @@ export default class EventSubClient {
         const sessionId = this.websocketClient.getSessionId();
         if (!sessionId) throw new Error('Websocket session ID not found');
         const requestConfig = new CreateEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setType(type).setCondition(condition).setVersion(version).setSessionId(sessionId).build();
-        const response = await axios.request<CreateSubscriptionResponse>(requestConfig);
+        const response = await axios.request<CreateEventSubSubscriptionResponse>(requestConfig);
         if (response.status !== 202) {
             const errorMessage = `Failed to subscribe to event ${type} with condition ${JSON.stringify(condition)}`;
             this.logger.error(errorMessage);
@@ -139,19 +138,19 @@ export default class EventSubClient {
     /**
      * Unsuscribe from an event
      * @param id Subscription ID
-     * @returns Result {@link DeleteSubscriptionResponse}
+     * @returns True if unsubscribed successfully
      * @throws Error if unsubscription failed
      */
     private async unsubscribe(id: string, token: UsableToken) {
         const requestConfig = new DeleteEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setId(id).build();
-        const response = await axios.request<DeleteSubscriptionResponse>(requestConfig);
+        const response = await axios.request<DeleteEventSubSubscriptionResponse>(requestConfig);
         if (response.status !== 204) {
             const errorMessage = `[${response.status}] Failed to unsubscribe from event ${id}`;
             this.logger.error(errorMessage);
             throw new Error(errorMessage);
         }
         this.logger.debug(`Unsubscribed from event ${id}`);
-        return response.data;
+        return true;
     }
 
     // Specyfic methods for events
