@@ -6,6 +6,7 @@ import ChannelChatMessageEventData from "../types/EventSub_Events/ChannelChatMes
 import {ChatterUser, PartialTwitchUser, TwitchUser} from "../objects/TwitchUser.object";
 import {ChatMessage, TwitchChatMessage} from "../objects/ChatMessage.object";
 import { ChannelOptionsProvider } from "../providers/ChannelOptions.provider";
+import ListenChannelsProvider, { GetListenerChannelsRefreshFunction } from "../providers/ListenChannels.provider";
 
 @Service(DINames.ChatDataInjectorService)
 export default class ChatDataInjectorService {
@@ -43,6 +44,7 @@ export default class ChatDataInjectorService {
                 return await provider.getChannelOptions(data.broadcaster_user_id);
             },
             [ChatDataType.API_CLIENT]: (data: ChannelChatMessageEventData) => Container.get(DINames.APIClient),
+            [ChatDataType.REFRESH_CHAT_LISTENERS]: (data: ChannelChatMessageEventData) => GetListenerChannelsRefreshFunction()
         };
 
         const mappedData = await dataMaps[type](data);

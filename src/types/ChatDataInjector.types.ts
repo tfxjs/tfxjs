@@ -2,6 +2,7 @@ import APIClient from "../clients/Api.client";
 import {ChatMessage, TwitchChatMessage} from "../objects/ChatMessage.object";
 import {ChatterUser, PartialTwitchUser, TwitchUser} from "../objects/TwitchUser.object";
 import { ChannelOptionsProvider } from "../providers/ChannelOptions.provider";
+import ListenChannelsProvider from "../providers/ListenChannels.provider";
 import ChannelChatMessageEventData from "./EventSub_Events/ChannelChatMessageEventData.types";
 import { Badge } from "./twitch/TwitchUser.types";
 
@@ -22,6 +23,8 @@ export enum ChatDataType {
     CHANNEL_OPTIONS = 'CHANNEL_OPTIONS', // Channel options
 
     API_CLIENT = 'API_CLIENT', // Twitch API client
+
+    REFRESH_CHAT_LISTENERS = 'REFRESH_CHAT_LISTENERS', // Refresh chat listeners - ListenChannelsProvider method
 }
 
 export type ChatDataTypeMap = {
@@ -41,4 +44,6 @@ export type ChatDataTypeMap = {
     [ChatDataType.CHANNEL_OPTIONS]: Record<string, any>; // ChannelBaseOptions & ExtendedByUser
 
     [ChatDataType.API_CLIENT]: APIClient;
+
+    [ChatDataType.REFRESH_CHAT_LISTENERS]: () => typeof ListenChannelsProvider.prototype.refreshChannels;
 };
