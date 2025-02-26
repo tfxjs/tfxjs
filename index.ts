@@ -74,7 +74,8 @@ import {
     MessageUser,
     BroadcasterData, Broadcaster,
     MessageData, Mess,
-    OptionsProvider, ChannelOptions
+    OptionsProvider, ChannelOptions,
+    API, RefreshChatListeners
 } from './src/decorators/ChatData.decorators';
 
 // ==============================
@@ -108,6 +109,7 @@ import InMemoryTokenRepository from './src/example/repositories/InMemoryToken.re
 // =================================
 
 import { IListenChannelsProvider } from './src/types/ListenChannels.provider.types';
+import { GetListenerChannelsRefreshFunction } from './src/providers/ListenChannels.provider';
 
 // ==================================
 //   Channel Options Provider Types
@@ -204,6 +206,7 @@ export {
     BroadcasterData, Broadcaster,
     MessageData, Mess,
     OptionsProvider, ChannelOptions,
+    API, RefreshChatListeners,
 
     // Chat Data Injector Objects
     PartialTwitchUser, TwitchUser, ChatterUser,
@@ -221,6 +224,7 @@ export {
 
     // Listen Channel Provider Types
     IListenChannelsProvider,
+    GetListenerChannelsRefreshFunction,
 
     // Channel Options Provider Types
     IChannelOptionsProvider, TChannelOptions, ChannelOptionsProvider,
