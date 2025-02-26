@@ -102,9 +102,10 @@ export default class EventSubClient {
     private async subscribe<T extends MappedTwitchEventId>(type: T, condition: TwitchEventData<T>['condition'], version: TwitchEventData<T>['version'], token: UsableToken) {
         const sessionId = this.websocketClient.getSessionId();
         if (!sessionId) throw new Error('Websocket session ID not found');
-        const requestConfig = new CreateEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setType(type).setCondition(condition).setVersion(version).setSessionId(sessionId).build();
+        const requestBuilder = new CreateEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setType(type).setCondition(condition).setVersion(version).setSessionId(sessionId);
+        const requestConfig = requestBuilder.build();
         const response = await axios.request<CreateEventSubSubscriptionResponse>(requestConfig);
-        if (response.status !== 202) {
+        if (!requestBuilder.correctResponseCodes.includes(response.status)) {
             const errorMessage = `Failed to subscribe to event ${type} with condition ${JSON.stringify(condition)}`;
             this.logger.error(errorMessage);
             throw new Error(errorMessage);
@@ -123,6 +124,7 @@ export default class EventSubClient {
         if(options.userId !== undefined) requestBuilder.setUserId(options.userId);
         if(options.status !== undefined) requestBuilder.setStatus(options.status);
         if(options.type !== undefined) requestBuilder.setType(options.type);
+        if(after !== null) requestBuilder.setAfter(after);
         const requestConfig = requestBuilder.build();
         const response = await axios.request<GetEventSubSubscriptionsResponse>(requestConfig);
         if (!requestBuilder.correctResponseCodes.includes(response.status)) {
@@ -142,9 +144,10 @@ export default class EventSubClient {
      * @throws Error if unsubscription failed
      */
     private async unsubscribe(id: string, token: UsableToken) {
-        const requestConfig = new DeleteEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setId(id).build();
+        const requestBuilder = new DeleteEventSubSubscriptionRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(token).setId(id);
+        const requestConfig = requestBuilder.build();
         const response = await axios.request<DeleteEventSubSubscriptionResponse>(requestConfig);
-        if (response.status !== 204) {
+        if (!requestBuilder.correctResponseCodes.includes(response.status)) {
             const errorMessage = `[${response.status}] Failed to unsubscribe from event ${id}`;
             this.logger.error(errorMessage);
             throw new Error(errorMessage);
