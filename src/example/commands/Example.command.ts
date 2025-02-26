@@ -1,5 +1,5 @@
 import { ChatCommand } from "../../decorators/ChatCommand.decorator";
-import { API, BroadcasterData, ChannelOptions, Mess, MessageUser, OptionsProvider, Raw } from "../../decorators/ChatData.decorators";
+import { API, BroadcasterData, ChannelOptions, Mess, MessageUser, OptionsProvider, Raw, RefreshChatListeners } from "../../decorators/ChatData.decorators";
 import { ChatterUser, PartialTwitchUser } from "../../objects/TwitchUser.object";
 import { ChannelOptionsProvider } from "../../providers/ChannelOptions.provider";
 import { ChatCommandExecution, ChatCommandExecutionGuard, ChatCommandExecutionGuardAvaliableResults, ChatCommandPostExecution, ChatCommandPreExecution } from "../../types/ChatCommand.types";
@@ -31,7 +31,8 @@ export default class ExampleCommand implements ChatCommandExecutionGuard, ChatCo
         @OptionsProvider() provider: ChannelOptionsProvider<ChannelOptionsExtend>,
         @ChannelOptions() options: ChannelOptionsExtend,
         @BroadcasterData() broadcasterData: PartialTwitchUser,
-        @Mess() message: TwitchChatMessage
+        @Mess() message: TwitchChatMessage,
+        @RefreshChatListeners() refreshChannels: () => void
     ): Promise<void> {
         console.log('Execution logic');
         await message.reply(`Example command executed ${options.eXampleExecutionCounter} times.`);
@@ -40,6 +41,7 @@ export default class ExampleCommand implements ChatCommandExecutionGuard, ChatCo
             ...options,
             eXampleExecutionCounter: options.eXampleExecutionCounter + 1
         })
+        refreshChannels();
     }
 
     async postExecution(
