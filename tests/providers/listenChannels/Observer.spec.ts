@@ -6,11 +6,9 @@ jest.mock('../../../src/utils/Logger', () => ({
     },
 }));
 
-import { Container } from 'typedi';
 import ListenChannelsProvider from '../../../src/providers/ListenChannels.provider';
 import { IListenChannelsProvider, ListenChannelsCallback, ListenChannelSubscriptionResult } from '../../../src/types/ListenChannels.provider.types';
 import ConfigService from '../../../src/services/Config.service';
-import DINames from '../../../src/utils/DI.names';
 
 describe('ListenChannelsProvider: Observer pattern', () => {
     let listenChannelsProvider: ListenChannelsProvider;
