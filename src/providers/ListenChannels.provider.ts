@@ -29,10 +29,11 @@ export default class ListenChannelsProvider {
     }
 
     // Interval for API check (TODO)
+    private apiCheckDelayInterval: NodeJS.Timeout | null = null;
     private apiCheckInterval: NodeJS.Timeout | null = null;
     private setupApiCheckInterval(): void {
         const apiCheckDelay = this.channelProvider.getRefreshInterval() / 2;
-        setTimeout(() => {
+        this.apiCheckDelayInterval = setTimeout(() => {
             if(this.apiCheckInterval) clearInterval(this.apiCheckInterval);
             const apiCheckInterval = this.channelProvider.getRefreshInterval() * 4;
             this.apiCheckInterval = setInterval(() => {
