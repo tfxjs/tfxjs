@@ -6,16 +6,21 @@ import ConfigService from '../services/Config.service';
 
 @Service(DINames.ListenChannelsProvider)
 export default class ListenChannelsProvider {
+    private readonly channelProvider: IListenChannelsProvider;
+    private readonly config: ConfigService;
+
     private readonly logger: Logger;
     private _lastChannelIds: string[] = [];
 
-    constructor(
-        @Inject(DINames.UserDefinedListenChannelsProvider) private readonly channelProvider: IListenChannelsProvider,
-        @Inject(DINames.ConfigService) private readonly config: ConfigService,
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('ListenChannelsProvider');
+
+        this.channelProvider = Container.get<IListenChannelsProvider>(DINames.UserDefinedListenChannelsProvider);
+        this.config = Container.get<ConfigService>(DINames.ConfigService);
+
         this.setupRefreshInterval();
         this.setupApiCheckInterval();
+
         this.logger.debug('Initialized');
     }
 

@@ -1,5 +1,5 @@
 import { TokenService } from '../services/Token.service';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import { Logger, LoggerFactory } from '../utils/Logger';
@@ -17,17 +17,17 @@ APIClient służy TYLKO do wywołań z tokenem userId (czyli użytkownika bota) 
 
 @Service(DINames.APIClient)
 export default class APIClient {
-    private clientId: string;
-    private userId: string;
+    public readonly config: ConfigService;
+    private readonly tokenService: TokenService;
+
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.ConfigService) readonly config: ConfigService,
-        @Inject(DINames.TokenService) private readonly tokenService: TokenService,
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('APIClient');
-        this.clientId = config.getClientId();
-        this.userId = config.getUserId();
+
+        this.config = Container.get<ConfigService>(DINames.ConfigService);
+        this.tokenService = Container.get<TokenService>(DINames.TokenService);
+
         this.logger.debug('Initialized');
     }
 
@@ -38,7 +38,7 @@ export default class APIClient {
 
     private async getUserAccessToken(): Promise<UsableUserToken> {
         this.logger.debug('Getting user access token');
-        const token = await this.tokenService.getUserTokenById(this.userId);
+        const token = await this.tokenService.getUserTokenById(this.config.getUserId());
         if (token == null) {
             throw new Error('BotUser access token not found. Check your configuration (If TokenRepository has access to BotUser refresh token).');
         }
@@ -77,9 +77,9 @@ export default class APIClient {
         // For now: Use user token
         const token = await this.getUserAccessToken();
         const requestConfig = new SendChatMessageRequestConfigBuilder()
-            .setClientId(this.clientId)
+            .setClientId(this.config.getClientId())
             .setAccessToken(token)
-            .setSenderId(this.userId)
+            .setSenderId(this.config.getUserId())
             .setBroadcasterId(channelId)
             .setMessage(message);
         if (replyToMessageId) requestConfig.setReplyToMessageId(replyToMessageId);

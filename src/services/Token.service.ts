@@ -9,13 +9,17 @@ import AccessTokenRequestBuilder from "../builders/auth/AccessToken.request.buil
 
 @Service(DINames.TokenService)
 export class TokenService {
+    private readonly config: ConfigService;
+    private readonly tokenRepository: ITokenRepositoryProvider
+
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.ConfigService) readonly config: ConfigService,
-        @Inject(DINames.TokenRepositoryProvider) private readonly tokenRepository: ITokenRepositoryProvider
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('TokenService');
+
+        this.config = Container.get<ConfigService>(DINames.ConfigService);
+        this.tokenRepository = Container.get<ITokenRepositoryProvider>(DINames.TokenRepositoryProvider);
+
         this.logger.debug(`Initialized`);
     }
 

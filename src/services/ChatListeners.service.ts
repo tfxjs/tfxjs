@@ -1,4 +1,4 @@
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
 import { ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
@@ -53,12 +53,14 @@ export default class ChatListenersService {
         logger.debug(`Registered listener ${options.name} with methods: ${methods.join(', ')}`);
     }
 
+    private readonly chatDataInjector: ChatDataInjectorService;
+
     private readonly logger: Logger;
-    constructor(
-        @Inject(DINames.ChatDataInjectorService) private readonly chatDataInjector: ChatDataInjectorService,
-        @Inject(DINames.Listeners) listeners: ChatListenerExecution[]
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('ChatListenersService');
+
+        this.chatDataInjector = Container.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
+        const listeners = Container.get<ChatListenerExecution[]>(DINames.Listeners);
 
         listeners.forEach((listener) => {
             ChatListenersService.getChatListenersContainer().enable(listener);

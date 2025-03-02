@@ -1,5 +1,6 @@
 import APIClient from '../clients/Api.client';
 import EventSubClient from '../clients/EventSub.client';
+import WebsocketClient from '../clients/Websocket.client';
 import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
 import TokenRepositoryProvider from '../providers/Token.repository.provider';
@@ -22,7 +23,8 @@ export default class ChatBotModule {
                 { token: DINames.TokenRepositoryProvider, useClass: TokenRepositoryProvider },
                 { token: DINames.TokenService, useClass: TokenService },
                 { token: DINames.EventSubClient, useClass: EventSubClient },
-                { token: DINames.APIClient, useClass: APIClient }
+                { token: DINames.APIClient, useClass: APIClient },
+                { token: DINames.WebsocketClient, useClass: WebsocketClient }
             ]
         };
     }
