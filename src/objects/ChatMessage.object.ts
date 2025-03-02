@@ -1,9 +1,9 @@
-import Container from "typedi";
 import { Cheer, IChatMessage, MessageFragment, MessageFramgentType, Reply } from "../types/twitch/ChatMessage.types";
 import DINames from "../utils/DI.names";
 import APIClient from "../clients/Api.client";
 import ChannelChatMessageEventData from "../types/EventSub_Events/ChannelChatMessageEventData.types";
 import {TwitchUser} from "./TwitchUser.object";
+import { DIContainer } from "../di/Container";
 
 export class ChatMessage {
     constructor(protected readonly data: IChatMessage) {}
@@ -66,7 +66,7 @@ export class ChatMessage {
 }
 
 export class TwitchChatMessage extends ChatMessage {
-    private readonly api: APIClient = Container.get(DINames.APIClient);
+    private readonly api: APIClient = DIContainer.get(DINames.APIClient);
 
     constructor(protected readonly data: ChannelChatMessageEventData) {
         super(data);

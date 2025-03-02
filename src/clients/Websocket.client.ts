@@ -5,23 +5,47 @@ import EventSubClient from "./EventSub.client";
 import TwitchEventId from "../enums/TwitchEventId.enum";
 import ChatCommandsService from "../services/ChatCommands.service";
 import ChatListenersService from "../services/ChatListeners.service";
+import DINames from "../utils/DI.names";
+import { DIContainer } from "../di/Container";
 
 export default class WebsocketClient {
-    private websocketClient: WebSocket | null = null;
     private readonly logger: Logger;
 
-    constructor(
-        private readonly eventSubClient: EventSubClient,
-        private onWebsocketConnected: (sessionId: string) => void,
-        private onWebsocketDisconnected: () => void,
-        readonly chatCommandsService: ChatCommandsService,
-        readonly chatListenersService: ChatListenersService,
-        readonly loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('WebsocketClient');
+    private sessionId: string = '';
+    private websocketClient: WebSocket | null = null;
+
+    private _chatCommandsService?: ChatCommandsService;
+    private _chatListenersService?: ChatListenersService;
+
+    constructor() {
+        this.logger = LoggerFactory.createLogger('WebsocketClient');
         this._connect();
         
         this.logger.debug('Initialized');
+    }
+
+    private get chatCommandsService(): ChatCommandsService | undefined {
+        if (!this._chatCommandsService) {
+            if(DIContainer.isBound(DINames.ChatCommandsService)) {
+                this.logger.debug('ChatCommandsService found in container');
+                this._chatCommandsService = DIContainer.get(DINames.ChatCommandsService);
+            } else {
+                this.logger.debug('ChatCommandsService not found in container. Skipping...');
+            }
+        }
+        return this._chatCommandsService;
+    }
+
+    private get chatListenersService(): ChatListenersService | undefined {
+        if (!this._chatListenersService) {
+            if(DIContainer.isBound(DINames.ChatListenersService)) {
+                this.logger.debug('ChatListenersService found in container');
+                this._chatListenersService = DIContainer.get(DINames.ChatListenersService);
+            } else {
+                this.logger.debug('ChatListenersService not found in container. Skipping...');
+            }
+        }
+        return this._chatListenersService;
     }
 
     // Keepalive
@@ -30,6 +54,10 @@ export default class WebsocketClient {
     // Milliseconds offset for keepalive check (eg.: 5s interval, 2s offset -> check if lastKeepAliveTimestamp is greater than 7s)
     private readonly keepAliveIntervalMsOffset = 2000;
     private keepAliveInterval: NodeJS.Timeout | null = null;
+
+    getSessionId() : string | null {
+        return this.sessionId ? this.sessionId : null;
+    }
 
     private updateKeepAliveTimestamp() {
         this.lastKeepAliveTimestamp = Date.now();
@@ -89,7 +117,6 @@ export default class WebsocketClient {
     private _disconnect() {
         if (this.websocketClient == null) return;
         if (this.keepAliveInterval != null) clearTimeout(this.keepAliveInterval);
-        this.onWebsocketDisconnected();
         this.websocketClient.close();
         this.websocketClient = null;
     }
@@ -120,7 +147,13 @@ export default class WebsocketClient {
     
     private handleWelcomeMessage(welcomeMessage: WebsocketMessage<WelcomePayload>) {
         const websocketWelcome = welcomeMessage as WebsocketMessage<WelcomePayload>;
-        this.onWebsocketConnected(websocketWelcome.payload.session.id);
+        
+        this.sessionId = websocketWelcome.payload.session.id;
+        this.logger.info(`Received welcome message. Session ID: ${this.sessionId}`);
+
+        const EventSubClient = DIContainer.get(DINames.EventSubClient) as EventSubClient;
+        EventSubClient.setupChatListeners();
+
         this.setupKeepAlive(websocketWelcome.payload.session.keepalive_timeout_seconds * 1000);
         return;
     }
@@ -129,26 +162,29 @@ export default class WebsocketClient {
         this.updateKeepAliveTimestamp();
 
         const notification = websocketNotification.payload;
-        // logger.log(`Received notification: ${JSON.stringify(notification)}`);
+        this.logger.debug(`Received notification ${notification.subscription.type} from subscription ID ${notification.subscription.id}`);
+
         if(notification.subscription.type == TwitchEventId.ChannelChatMessage) {
-            this.chatCommandsService.handleCommand(notification.event);
-            this.chatListenersService.handleListener(notification.event);
+            if (this.chatCommandsService) this.chatCommandsService.handleCommand(notification.event);
+            if (this.chatListenersService) this.chatListenersService.handleListener(notification.event);
         }
 
         return;
     }
 
     private handleRevocation(revocationMessage: WebsocketMessage<RevocationPayload>) {
+        this.logger.debug(`Received revocation message. Subscription ID: ${revocationMessage.payload.subscription.id} (Type: ${revocationMessage.payload.subscription.type})`);
         return;
     }
 
     private handleClose(closeMessage: WebsocketMessage<any>) {
+        this.logger.debug(`Received close message.`);
         if (this.keepAliveInterval !== null) clearInterval(this.keepAliveInterval);
         return;
     }
 
     private handleKeepAlive(keepAliveMessage: WebsocketMessage<any>) {
-        const newKeepAliveTimestamp = Date.now();
+        this.logger.debug(`Received keepalive message.`);
         this.updateKeepAliveTimestamp();
         return;
     }

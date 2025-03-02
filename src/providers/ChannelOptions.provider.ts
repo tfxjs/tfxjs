@@ -1,32 +1,30 @@
-import { Inject } from "typedi";
-import { TChannelOptions, IChannelOptionsProvider } from "../types/ChannelOptions.provider";
+import { DIContainer } from "../di/Container";
+import { TChannelOptions, IChannelOptionsProvider, ChannelBaseOptions } from "../types/ChannelOptions.provider";
 import DINames from "../utils/DI.names";
-import ConfigService from "../services/Config.service";
 import { Logger, LoggerFactory } from "../utils/Logger";
-import { TChannelOptionsProvider } from "../decorators/TwitchBot.decorator";
 
-export class ChannelOptionsProvider<T extends Record<string, any> = {}> {
-    private provider: IChannelOptionsProvider<T>;
+export class ChannelOptionsProvider<T extends ChannelBaseOptions & Record<string, any> = ChannelBaseOptions> {
+    private readonly optionsProvider: IChannelOptionsProvider<T>;
+
     private logger: Logger;
 
-    constructor(
-        private readonly optionsProvider: TChannelOptionsProvider<T>,
-        @Inject(DINames.ConfigService) private readonly configService: ConfigService,
-        @Inject(DINames.LoggerFactory) private readonly loggerFactory: LoggerFactory
-    ) {
-        this.logger = this.loggerFactory.createLogger('ChannelOptionsProvider');
-        this.provider = new this.optionsProvider();
+    constructor() {
+        this.logger = LoggerFactory.createLogger('ChannelOptionsProvider');
+
+        this.optionsProvider = DIContainer.get<IChannelOptionsProvider<T>>(DINames.UserDefinedChannelOptionsProvider);
+
         // TODO: Cache
+
         this.logger.debug('Initialized');
     }
 
     private async getOptions(channelId: string): Promise<TChannelOptions<T>> {
-        const optionsFromProvider = await this.provider.getOptions(channelId);
+        const optionsFromProvider = await this.optionsProvider.getOptions(channelId);
         return optionsFromProvider;
     }
 
     private saveOptions(channelId: string, options: TChannelOptions<T>): void {
-        this.provider.setOptions(channelId, options);
+        this.optionsProvider.setOptions(channelId, options);
     }
 
     /**

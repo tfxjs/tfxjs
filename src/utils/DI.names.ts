@@ -10,14 +10,21 @@ enum DINames {
     RateLimiterService = 'RATE_LIMITER_SERVICE',
     EventSubClient = 'EVENT_SUB_CLIENT',
     APIClient = 'API_CLIENT',
+    WebsocketClient = 'WEBSOCKET_CLIENT',
 
-    // Main class
-    TwitchBotFramework = 'TWITCH_BOT_FRAMEWORK',
-
-    // User-defined
+    // Providers
     ListenChannelsProvider = 'LISTEN_CHANNELS_PROVIDER',
     ChannelOptionsProvider = 'CHANNEL_OPTIONS_PROVIDER',
-    TokenRepository = 'TOKEN_REPOSITORY',
+    TokenRepositoryProvider = 'TOKEN_REPOSITORY_PROVIDER',
+
+    // User-defined
+    UserDefinedListenChannelsProvider = 'USER_DEFINED_LISTEN_CHANNELS_PROVIDER',
+    UserDefinedChannelOptionsProvider = 'USER_DEFINED_CHANNEL_OPTIONS_PROVIDER',
+    UserDefinedTokenRepositoryProvider = 'USER_DEFINED_TOKEN_REPOSITORY_PROVIDER',
+
+    // Commands & Listeners
+    Commands = 'COMMANDS',
+    Listeners = 'LISTENERS',
 
     // Chat 
     ChatCommandsService = 'CHAT_COMMANDS_SERVICE',

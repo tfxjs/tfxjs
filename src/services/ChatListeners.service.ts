@@ -1,17 +1,17 @@
-import { Inject, Service } from 'typedi';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
-import { ChatListenerDecoratorOptions, ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
+import { ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import DINames from '../utils/DI.names';
-import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
+import { ListenersModuleForFeatureConfig } from '../types/Module.types';
+import { DIContainer } from '../di/Container';
 
 export default class ChatListenersService {
     private static readonly chatListenersContainer = GeneralContainer.getInstance<GeneralFactory, ChatListenerExecution>();
-    private static readonly chatListenerRegistry = GeneralRegistry.getInstance<ChatListenerInstance, ChatListenerDecoratorOptions>();
+    private static readonly chatListenerRegistry = GeneralRegistry.getInstance<ChatListenerInstance, ListenersModuleForFeatureConfig>();
 
-    static getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ChatListenerDecoratorOptions> {
+    static getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ListenersModuleForFeatureConfig> {
         return this.chatListenerRegistry;
     }
 
@@ -19,16 +19,16 @@ export default class ChatListenersService {
         return this.chatListenersContainer;
     }
 
-    static registerListener(target: any, options: Required<ChatListenerDecoratorOptions>): void {
+    static registerListener(target: any, options: Required<ListenersModuleForFeatureConfig>): void {
         const logger = new Logger('ChatListenerDecorator:RegisterListener');
-        logger.log(`Registering listener ${options.name}`);
+        logger.debug(`Registering listener ${options.name}`);
 
         // Register the listener in the container
         this.chatListenersContainer.set({
             id: target,
             factory: () => new target(),
             transient: options.transient,
-            enabled: false, // Default disabled (enable by setting in TwitchBotFramework)
+            enabled: false, // Default disabled (enable by passing the listener class to the constructor)
         });
 
         const instance = this.chatListenersContainer.get(target) as ChatListenerInstance;
@@ -48,17 +48,27 @@ export default class ChatListenersService {
             .filter((m) => m !== undefined) as (keyof ChatListenerInstance)[];
 
         this.chatListenerRegistry.register(target, options, methods);
+
+        logger.debug(`Registered listener ${options.name} with methods: ${methods.join(', ')}`);
     }
+
+    private readonly chatDataInjector: ChatDataInjectorService;
 
     private readonly logger: Logger;
-    constructor(
-        @Inject(DINames.ChatDataInjectorService) private readonly chatDataInjector: ChatDataInjectorService,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('ChatListenersService');
+    constructor() {
+        this.logger = LoggerFactory.createLogger('ChatListenersService');
+
+        this.chatDataInjector = DIContainer.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
+        const listeners = DIContainer.get<ChatListenerExecution[]>(DINames.Listeners);
+
+        listeners.forEach((listener) => {
+            ChatListenersService.getChatListenersContainer().enable(listener);
+        });
+
+        this.logger.debug('Initialized');
     }
 
-    getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ChatListenerDecoratorOptions> {
+    getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ListenersModuleForFeatureConfig> {
         return ChatListenersService.chatListenerRegistry;
     }
 
@@ -67,17 +77,20 @@ export default class ChatListenersService {
     }
 
     handleListener(data: ChannelChatMessageEventData): void {
+        this.logger.debug(`Handling listener for message ID: ${data.message_id}`);
         const listeners = this.getListenersRegistry().getRegisteredEntries();
         listeners.forEach(async (listener) => {
             let instance: ChatListenerInstance;
             try {
                 instance = this.getChatListenersContainer().get(listener.target, true);
             } catch (error) {
+                this.logger.error(`Error while getting listener instance ${listener.options.name}: ${error}`);
                 return;
             }
 
             try {
                 const args = await this.chatDataInjector.injectParameters(instance, 'execution', data);
+                this.logger.debug(`Executing listener ${listener.options.name} with args: ${args}`);
                 instance.execution(...args);
             } catch (error) {
                 this.logger.error(`Error while executing listener ${listener.options.name}: ${error}`);

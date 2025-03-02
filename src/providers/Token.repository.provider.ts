@@ -1,12 +1,19 @@
-import { TTokenRepositoryProvider } from "../decorators/TwitchBot.decorator";
-import { AppToken, ITokenRepository, UserToken } from "../types/Token.repository.types";
+import { DIContainer } from "../di/Container";
+import { AppToken, ITokenRepositoryProvider, UserToken } from "../types/Token.repository.types";
+import DINames from "../utils/DI.names";
+import { Logger, LoggerFactory } from "../utils/Logger";
 
-export default class TokenRepository implements ITokenRepository {
-    private tokenRepository: ITokenRepository;
-    constructor(
-        userDefinedTokenRepository: TTokenRepositoryProvider
-    ) {
-        this.tokenRepository = new userDefinedTokenRepository();
+export default class TokenRepositoryProvider implements ITokenRepositoryProvider {
+    private tokenRepository: ITokenRepositoryProvider
+
+    private logger: Logger;
+
+    constructor() {
+        this.logger = LoggerFactory.createLogger('TokenRepositoryProvider');
+
+        this.tokenRepository = DIContainer.get<ITokenRepositoryProvider>(DINames.UserDefinedTokenRepositoryProvider);
+
+        this.logger.debug(`Initialized`);
     }
 
     // App / Client

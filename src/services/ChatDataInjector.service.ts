@@ -1,4 +1,4 @@
-import Container, { Inject } from "typedi";
+import "reflect-metadata";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import { ChatDataType, ChatDataTypeMap } from "../types/ChatDataInjector.types";
@@ -6,14 +6,14 @@ import ChannelChatMessageEventData from "../types/EventSub_Events/ChannelChatMes
 import {ChatterUser, PartialTwitchUser, TwitchUser} from "../objects/TwitchUser.object";
 import {ChatMessage, TwitchChatMessage} from "../objects/ChatMessage.object";
 import { ChannelOptionsProvider } from "../providers/ChannelOptions.provider";
+import { GetListenerChannelsRefreshFunction } from "../providers/ListenChannels.provider";
+import { DIContainer } from "../di/Container";
 
 export default class ChatDataInjectorService {
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('ChatDataInjector');
+    constructor() {
+        this.logger = LoggerFactory.createLogger('ChatDataInjector');
         this.logger.debug('Initialized');
     }
 
@@ -38,12 +38,13 @@ export default class ChatDataInjectorService {
             [ChatDataType.BROADCASTER]: (data: ChannelChatMessageEventData) => new TwitchUser(data.broadcaster_user_id),
             [ChatDataType.MESSAGE_DATA]: (data: ChannelChatMessageEventData) => new ChatMessage(data),
             [ChatDataType.MESSAGE]: (data: ChannelChatMessageEventData) => new TwitchChatMessage(data),
-            [ChatDataType.OPTIONS_PROVIDER]: (data: ChannelChatMessageEventData) => Container.get(DINames.ChannelOptionsProvider),
+            [ChatDataType.OPTIONS_PROVIDER]: (data: ChannelChatMessageEventData) => DIContainer.get(DINames.ChannelOptionsProvider),
             [ChatDataType.CHANNEL_OPTIONS]: async (data: ChannelChatMessageEventData) => {
-                const provider = Container.get(DINames.ChannelOptionsProvider) as ChannelOptionsProvider;
+                const provider = DIContainer.get(DINames.ChannelOptionsProvider) as ChannelOptionsProvider;
                 return await provider.getChannelOptions(data.broadcaster_user_id);
             },
-            [ChatDataType.API_CLIENT]: (data: ChannelChatMessageEventData) => Container.get(DINames.APIClient),
+            [ChatDataType.API_CLIENT]: (data: ChannelChatMessageEventData) => DIContainer.get(DINames.APIClient),
+            [ChatDataType.REFRESH_CHAT_LISTENERS]: (data: ChannelChatMessageEventData) => GetListenerChannelsRefreshFunction()
         };
 
         const mappedData = await dataMaps[type](data);

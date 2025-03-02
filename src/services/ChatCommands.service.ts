@@ -1,18 +1,19 @@
-import Container, { Inject } from 'typedi';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
-import { ChatCommandDecoratorOptions, ChatCommandExecution, ChatCommandInstance } from '../types/ChatCommand.types';
+import { ChatCommandExecution, ChatCommandInstance } from '../types/ChatCommand.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
 import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
+import { CommandsModuleForFeatureConfig } from '../types/Module.types';
+import { DIContainer } from '../di/Container';
 
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
-    private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, ChatCommandDecoratorOptions>();
+    private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, CommandsModuleForFeatureConfig>();
 
-    static getCommandRegistry(): GeneralRegistry<ChatCommandInstance, ChatCommandDecoratorOptions> {
+    static getCommandRegistry(): GeneralRegistry<ChatCommandInstance, CommandsModuleForFeatureConfig> {
         return this.chatCommandRegistry;
     }
 
@@ -20,7 +21,7 @@ export default class ChatCommandsService {
         return this.chatCommandsContainer;
     }
 
-    static registerCommand(target: any, options: Required<ChatCommandDecoratorOptions>): void {
+    static registerCommand(target: any, options: Required<CommandsModuleForFeatureConfig>): void {
         const logger = new Logger('ChatCommandsService:RegisterCommand');
         logger.log(`Registering command ${options.name}`);
 
@@ -29,7 +30,7 @@ export default class ChatCommandsService {
             id: target,
             factory: () => new target(),
             transient: options.transistent,
-            enabled: false, // Default disabled (enable by setting in TwitchBotFramework)
+            enabled: false, // Default disabled (enable by passing the command class to the constructor)
         });
 
         const instance = ChatCommandsService.chatCommandsContainer.get(target) as ChatCommandInstance;
@@ -51,19 +52,29 @@ export default class ChatCommandsService {
         ChatCommandsService.chatCommandRegistry.register(target, options, methods);
     }
 
+    private readonly apiClient: APIClient;
+    private readonly channelOptionsProvider: ChannelOptionsProvider;
+    private readonly chatDataInjector: ChatDataInjectorService;
+
     private readonly logger: Logger;
     private readonly allKeywords: string[] = [];
 
-    constructor(
-        @Inject(DINames.APIClient) private readonly apiClient: APIClient,
-        @Inject(DINames.ChannelOptionsProvider) private readonly channelOptionsProvider: ChannelOptionsProvider,
-        @Inject(DINames.ChatDataInjectorService) private readonly chatDataInjector: ChatDataInjectorService,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('ChatCommandsService');
+    constructor() {
+        this.logger = LoggerFactory.createLogger('ChatCommandsService');
+
+        this.apiClient = DIContainer.get<APIClient>(DINames.APIClient);
+        this.channelOptionsProvider = DIContainer.get<ChannelOptionsProvider>(DINames.ChannelOptionsProvider);
+        this.chatDataInjector = DIContainer.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
+        const commands = DIContainer.get<ChatCommandExecution[]>(DINames.Commands);
+
+        commands.forEach((command) => {
+            ChatCommandsService.getChatCommandsContainer().enable(command);
+        });
+
+        this.logger.debug(`Initialized`);
     }
 
-    getCommandRegistry(): GeneralRegistry<ChatCommandInstance, ChatCommandDecoratorOptions> {
+    getCommandRegistry(): GeneralRegistry<ChatCommandInstance, CommandsModuleForFeatureConfig> {
         return ChatCommandsService.chatCommandRegistry;
     }
 
@@ -89,7 +100,7 @@ export default class ChatCommandsService {
             this.logger.debug(`Ignoring message ${data.message_id} (#${data.broadcaster_user_login}) - Missing prefix '${commandPrefix}'`);
             return;
         }
-       
+
         const keywords = this.getAllKeywords();
 
         const message = data.message.text;
@@ -118,8 +129,7 @@ export default class ChatCommandsService {
                 const guardResult = await instance.guard(...args);
                 if (!guardResult.canAccess) {
                     this.logger.log(`Guard failed for command ${command.entry.options.name} for user ${data.chatter_user_login} in channel ${data.broadcaster_user_login} with reason: ${guardResult.message}`);
-                    if (guardResult.message?.length != 0)
-                        this.apiClient.sendMessage(data.broadcaster_user_id, guardResult.message || "You cannot execute this command!", data.message_id)
+                    if (guardResult.message?.length != 0) this.apiClient.sendMessage(data.broadcaster_user_id, guardResult.message || 'You cannot execute this command!', data.message_id);
                     return;
                 }
             }
@@ -144,7 +154,7 @@ export default class ChatCommandsService {
         }
     }
 
-    private getKeywordsCommandMap(): { keywords: string[]; entry: GeneralRegistryEntry<ChatCommandInstance, ChatCommandDecoratorOptions> }[] {
+    private getKeywordsCommandMap(): { keywords: string[]; entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig> }[] {
         const commands = this.getCommandRegistry().getRegisteredEntries();
         const map = commands.map((entry) => {
             return {
@@ -155,7 +165,7 @@ export default class ChatCommandsService {
         return map;
     }
 
-    private getKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, ChatCommandDecoratorOptions>): string[] {
+    private getKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig>): string[] {
         const keywords = [entry.options.keyword, ...entry.options.aliases].map((keyword) => {
             if (entry.options.ignoreCase) keyword = keyword.toLowerCase();
             return keyword;

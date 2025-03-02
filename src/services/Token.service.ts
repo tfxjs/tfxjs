@@ -1,28 +1,24 @@
 import axios from "axios";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import TwtichPermissionScope from "../enums/TwitchPermissionScope.enum";
-import { Inject, Service } from "typedi";
-import { ITwitchBotConfig } from "../decorators/TwitchBot.decorator";
 import ConfigService from "./Config.service";
 import DINames from "../utils/DI.names";
-import TokenRepository from "../repositories/Token.repository";
-import { AppToken, UsableAppToken, UsableToken, UsableUserToken, UsableUserTokenWithScopes, UserToken } from "../types/Token.repository.types";
+import { AppToken, ITokenRepositoryProvider, UsableAppToken, UsableToken, UsableUserToken, UsableUserTokenWithScopes, UserToken } from "../types/Token.repository.types";
 import AccessTokenRequestBuilder from "../builders/auth/AccessToken.request.builder";
+import { DIContainer } from "../di/Container";
 
 export class TokenService {
-    private readonly clientSecret: string;
-    private readonly clientId: string;
+    private readonly config: ConfigService;
+    private readonly tokenRepository: ITokenRepositoryProvider
+
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.ConfigService) readonly config: ConfigService,
-        @Inject(DINames.TokenRepository) private readonly tokenRepository: TokenRepository,
-        @Inject(DINames.LoggerFactory) loggerFactory: LoggerFactory
-    ) {
-        this.logger = loggerFactory.createLogger('TokenService');
-        const options : ITwitchBotConfig = config.getConfig();
-        this.clientId = options.clientId;
-        this.clientSecret = options.clientSecret;
+    constructor() {
+        this.logger = LoggerFactory.createLogger('TokenService');
+
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
+        this.tokenRepository = DIContainer.get<ITokenRepositoryProvider>(DINames.TokenRepositoryProvider);
+
         this.logger.debug(`Initialized`);
     }
 
@@ -45,10 +41,10 @@ export class TokenService {
         }
 
         // else: Generate new token
-        this.logger.log(`AppToken is expired or not saved. Requesting new app access token...`);
+        this.logger.debug(`AppToken is expired or not saved. Requesting new app access token...`);
         const accessTokenRequestConfig = new AccessTokenRequestBuilder()
-            .setClientId(this.clientId)
-            .setClientSecret(this.clientSecret)
+            .setClientId(this.config.getClientId())
+            .setClientSecret(this.config.getClientSecret())
             .forClient()
             .build();
 
@@ -98,8 +94,8 @@ export class TokenService {
         if(this._userAccessTokenRequests[userId] == undefined) {
             this.logger.info(`Found refresh token for user id=${userId}. Requesting new access token...`);
             const accessTokenRequestConfig = new AccessTokenRequestBuilder()
-                .setClientId(this.clientId)
-                .setClientSecret(this.clientSecret)
+                .setClientId(this.config.getClientId())
+                .setClientSecret(this.config.getClientSecret())
                 .forUser(refreshToken)
                 .build();
             this._userAccessTokenRequests[userId] = axios.request(accessTokenRequestConfig);

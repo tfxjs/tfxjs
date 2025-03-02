@@ -20,7 +20,7 @@ Zarządzanie tokenami użytkowników:
 
 import TwtichPermissionScope from "../enums/TwitchPermissionScope.enum";
 
-export interface ITokenRepository {
+export interface ITokenRepositoryProvider {
     // App / Client
     getAppToken(): Promise<AppToken | null>;
     saveAppToken(token: AppToken): Promise<void>;
