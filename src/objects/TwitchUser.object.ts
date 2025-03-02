@@ -1,9 +1,9 @@
-import Container from 'typedi';
 import TwitchUserCache from '../cache/TwitchUser.cache';
 import DINames from '../utils/DI.names';
 import { ITwitchUser, IPartialTwitchUser, IChatterUser, Badge, BadgeSetId, TwitchUserType, TwitchUserBroadcasterType } from '../types/twitch/TwitchUser.types';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import APIClient from '../clients/Api.client';
+import { DIContainer } from '../di/Container';
 
 export class PartialTwitchUser {
     constructor(private readonly data: IPartialTwitchUser) {}
@@ -28,19 +28,19 @@ export class TwitchUser {
 
     private get cache() : TwitchUserCache | undefined  {
         if(this._cache == null){
-            if(!Container.has(DINames.TwitchUserCache)) {
+            if(!DIContainer.isBound(DINames.TwitchUserCache)) {
                 this.logger.debug(`Cache is not defined. Using API to fetch data.`);
                 return;
             }
-            this._cache = Container.get(DINames.TwitchUserCache);
+            this._cache = DIContainer.get(DINames.TwitchUserCache);
         }
         return this._cache;
     }
 
     private get api() : APIClient {
         if(this._api == null) {
-            if(!Container.has(DINames.APIClient)) throw new Error(`APIClient is not defined.`);
-            this._api = Container.get(DINames.APIClient);
+            if(!DIContainer.isBound(DINames.APIClient)) throw new Error(`APIClient is not defined.`);
+            this._api = DIContainer.get(DINames.APIClient);
         }
         return this._api as APIClient;
     }

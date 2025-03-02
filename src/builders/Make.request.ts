@@ -1,10 +1,10 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { Logger } from '../utils/Logger';
 import BaseRequestBuilder from './api/Base.request.builder';
-import Container from 'typedi';
 import DINames from '../utils/DI.names';
 import RateLimiterService from '../services/RateLimiter.service';
 import { RequestPriority } from '../types/RateLimiter.types';
+import { DIContainer } from '../di/Container';
 
 let counter = 0;
 
@@ -22,8 +22,8 @@ export default async function MakeRequest<T>(requestBuilder: BaseRequestBuilder,
     }
 
     // if APIRateLimiter is configured
-    if (Container.has(DINames.RateLimiterService)) {
-        const ratelimiter = Container.get(DINames.RateLimiterService) as RateLimiterService;
+    if (DIContainer.isBound(DINames.RateLimiterService)) {
+        const ratelimiter = DIContainer.get(DINames.RateLimiterService) as RateLimiterService;
         const individualRateLimiter = usedToken.isApp ? ratelimiter.forApp() : ratelimiter.forUser(usedToken.userId);
         return await individualRateLimiter
             .send<T>(requestConfig, priority)

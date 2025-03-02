@@ -1,4 +1,5 @@
 import ChatCommandsService from '../services/ChatCommands.service';
+import ChatDataInjectorService from '../services/ChatDataInjector.service';
 import { CommandsModuleForFeatureConfig, CommandsModuleForRootConfig, IModuleDefinition } from '../types/Module.types';
 import DINames from '../utils/DI.names';
 
@@ -8,10 +9,8 @@ export default class CommandsModule {
             module: CommandsModule,
             userProviders: [{ token: DINames.Commands, useValue: config.commands }],
             providers: [
-                {
-                    token: DINames.ChatCommandsService,
-                    useClass: ChatCommandsService,
-                },
+                { token: DINames.ChatCommandsService, useClass: ChatCommandsService },
+                { token: DINames.ChatDataInjectorService, useClass: ChatDataInjectorService },
             ],
         };
     }

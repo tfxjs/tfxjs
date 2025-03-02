@@ -1,19 +1,20 @@
-import { Inject, Service } from "typedi";
+import { DIContainer } from "../di/Container";
 import { TChannelOptions, IChannelOptionsProvider, ChannelBaseOptions } from "../types/ChannelOptions.provider";
 import DINames from "../utils/DI.names";
-import ConfigService from "../services/Config.service";
 import { Logger, LoggerFactory } from "../utils/Logger";
 
-@Service(DINames.ChannelOptionsProvider)
 export class ChannelOptionsProvider<T extends ChannelBaseOptions & Record<string, any> = ChannelBaseOptions> {
+    private readonly optionsProvider: IChannelOptionsProvider<T>;
+
     private logger: Logger;
 
-    constructor(
-        @Inject(DINames.UserDefinedChannelOptionsProvider) private readonly optionsProvider: IChannelOptionsProvider<T>,
-        @Inject(DINames.ConfigService) private readonly configService: ConfigService,
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('ChannelOptionsProvider');
+
+        this.optionsProvider = DIContainer.get<IChannelOptionsProvider<T>>(DINames.UserDefinedChannelOptionsProvider);
+
         // TODO: Cache
+
         this.logger.debug('Initialized');
     }
 

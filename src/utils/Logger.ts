@@ -1,6 +1,6 @@
-import Container, { Inject, Service } from "typedi";
 import DINames from "./DI.names";
 import ConfigService from "../services/Config.service";
+import { DIContainer } from "../di/Container";
 
 export enum LogLevel {
     NORMAL = 'normal',
@@ -24,13 +24,21 @@ export enum ANSI_COLORS {
 
 
 export class LoggerFactory {
+    private static _logger: Logger | null = null;
     private static configService: ConfigService | null = null;
 
+    static get logger(): Logger {
+        if (LoggerFactory._logger === null) LoggerFactory._logger = new Logger('LoggerFactory');
+        return LoggerFactory._logger;
+    }
+
     public static setConfig(configService: ConfigService): void {
+        this.logger.debug('Setting config service');
         this.configService = configService
     }
 
     public static createLogger(name: string, nameColor: ANSI_COLORS = ANSI_COLORS.cyan, messageColor: ANSI_COLORS = ANSI_COLORS.white): Logger {
+        this.logger.debug(`Creating logger for ${name}`);
         return new Logger(name, nameColor, messageColor, this.configService);
     }
 }
@@ -46,8 +54,8 @@ export class Logger {
     }
 
     private canShowLogLevel(type: LogLevel): boolean {
-        if(!Container.has(DINames.ConfigService)) return true;
-        this.configService = Container.get(DINames.ConfigService);
+        if(!DIContainer.isBound(DINames.ConfigService)) return true;
+        this.configService = DIContainer.get(DINames.ConfigService);
         if(this.configService === null) return true;
         const config = this.configService.getConfig()
         if (!config.log) return true;

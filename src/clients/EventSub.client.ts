@@ -5,7 +5,6 @@ import { MappedTwitchEventId, TwitchEventData } from '../types/EventSub.types';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import WebsocketClient from './Websocket.client';
 import TwtichPermissionScope from '../enums/TwitchPermissionScope.enum';
-import { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
@@ -15,18 +14,24 @@ import CreateEventSubSubscriptionRequestConfigBuilder, { CreateEventSubSubscript
 import GetEventSubSubscriptionsRequestConfigBuilder, { GetEventSubSubscriptionsResponse } from '../builders/api/GetEventSubSubscriptions.request.builder';
 import DeleteEventSubSubscriptionRequestConfigBuilder, { DeleteEventSubSubscriptionResponse } from '../builders/api/DeleteEventSubSubscription.request.builder';
 import { UsableToken } from '../types/Token.repository.types';
+import { DIContainer } from '../di/Container';
 
-@Service(DINames.EventSubClient)
 export default class EventSubClient {
+    private readonly config: ConfigService;
+    private readonly tokenService: TokenService;
+    private readonly listenChannelsProvider: ListenChannelsProvider;
+    private readonly websocketClient: WebsocketClient;
+
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.ConfigService) private readonly config: ConfigService,
-        @Inject(DINames.TokenService) private readonly tokenService: TokenService,
-        @Inject(DINames.ListenChannelsProvider) private readonly listenChannelsProvider: ListenChannelsProvider,
-        @Inject(DINames.WebsocketClient) private readonly websocketClient: WebsocketClient,
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('EventSubClient');
+
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
+        this.tokenService = DIContainer.get<TokenService>(DINames.TokenService);
+        this.listenChannelsProvider = DIContainer.get<ListenChannelsProvider>(DINames.ListenChannelsProvider);
+        this.websocketClient = DIContainer.get<WebsocketClient>(DINames.WebsocketClient);
+
         this.logger.debug('Initialized');
     }
 
