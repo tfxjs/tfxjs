@@ -35,13 +35,13 @@ jobs:
       - name: Clean cache
         run: npm cache clean --force
 
-      - name: Instalacja zależności
+      - name: Install dependencies
         run: npm install
 
-      - name: Budowanie projektu (TypeScript)
+      - name: Build project (TypeScript)
         run: npm run build
 
-      - name: Ustawienie wersji
+      - name: Update package.json version
         run: npm version "${{ env.RELEASE_VERSION }}" --no-git-tag-version
 
       - name: Commit updated package.json version
