@@ -1,4 +1,4 @@
-import { Inject, Service } from "typedi";
+import Container, { Inject, Service } from "typedi";
 import DINames from "../utils/DI.names";
 import TwitchUserCacheFetchStrategy from "./fetchers/TwitchUser.cache.fetch.strategy";
 import LRUCacheStrategy from "./strategies/LRUCache.strategy";
@@ -7,9 +7,8 @@ import { ITwitchUser } from "../types/twitch/TwitchUser.types";
 
 @Service(DINames.TwitchUserCache)
 export default class TwitchUserCache extends LRUCacheStrategy<ITwitchUser> {
-    constructor(
-        @Inject(DINames.TwitchUserCacheFetchStrategy) fetchStrategy: TwitchUserCacheFetchStrategy
-    ) {
+    constructor() {
+        const fetchStrategy = Container.get<TwitchUserCacheFetchStrategy>(DINames.TwitchUserCacheFetchStrategy);
         super({
             maxSize: 1000,
             ttl: 60,

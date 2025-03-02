@@ -6,7 +6,7 @@ import { Logger, LoggerFactory } from '../utils/Logger';
 import WebsocketClient from './Websocket.client';
 import { CreateSubscriptionResponse, DeleteSubscriptionResponse } from '../types/APIClient.types';
 import TwtichPermissionScope from '../enums/TwitchPermissionScope.enum';
-import { Inject, Service } from 'typedi';
+import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
@@ -19,15 +19,21 @@ import { UsableToken } from '../types/Token.repository.types';
 
 @Service(DINames.EventSubClient)
 export default class EventSubClient {
+    private readonly config: ConfigService;
+    private readonly tokenService: TokenService;
+    private readonly listenChannelsProvider: ListenChannelsProvider;
+    private readonly websocketClient: WebsocketClient;
+
     private readonly logger: Logger;
 
-    constructor(
-        @Inject(DINames.ConfigService) private readonly config: ConfigService,
-        @Inject(DINames.TokenService) private readonly tokenService: TokenService,
-        @Inject(DINames.ListenChannelsProvider) private readonly listenChannelsProvider: ListenChannelsProvider,
-        @Inject(DINames.WebsocketClient) private readonly websocketClient: WebsocketClient,
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('EventSubClient');
+
+        this.config = Container.get<ConfigService>(DINames.ConfigService);
+        this.tokenService = Container.get<TokenService>(DINames.TokenService);
+        this.listenChannelsProvider = Container.get<ListenChannelsProvider>(DINames.ListenChannelsProvider);
+        this.websocketClient = Container.get<WebsocketClient>(DINames.WebsocketClient);
+
         this.logger.debug('Initialized');
     }
 

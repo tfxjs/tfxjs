@@ -53,16 +53,20 @@ export default class ChatCommandsService {
         ChatCommandsService.chatCommandRegistry.register(target, options, methods);
     }
 
+    private readonly apiClient: APIClient;
+    private readonly channelOptionsProvider: ChannelOptionsProvider;
+    private readonly chatDataInjector: ChatDataInjectorService;
+
     private readonly logger: Logger;
     private readonly allKeywords: string[] = [];
 
-    constructor(
-        @Inject(DINames.APIClient) private readonly apiClient: APIClient,
-        @Inject(DINames.ChannelOptionsProvider) private readonly channelOptionsProvider: ChannelOptionsProvider,
-        @Inject(DINames.ChatDataInjectorService) private readonly chatDataInjector: ChatDataInjectorService,
-        @Inject(DINames.Commands) commands: ChatCommandExecution[]
-    ) {
+    constructor() {
         this.logger = LoggerFactory.createLogger('ChatCommandsService');
+
+        this.apiClient = Container.get<APIClient>(DINames.APIClient);
+        this.channelOptionsProvider = Container.get<ChannelOptionsProvider>(DINames.ChannelOptionsProvider);
+        this.chatDataInjector = Container.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
+        const commands = Container.get<ChatCommandExecution[]>(DINames.Commands);
 
         commands.forEach((command) => {
             ChatCommandsService.getChatCommandsContainer().enable(command);
