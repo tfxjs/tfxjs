@@ -1,5 +1,5 @@
 import { TokenService } from '../services/Token.service';
-import Container, { Inject, Service } from 'typedi';
+import Container from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import { Logger, LoggerFactory } from '../utils/Logger';
@@ -15,7 +15,6 @@ APIClient służy TYLKO do wywołań z tokenem userId (czyli użytkownika bota) 
 
 */
 
-@Service(DINames.APIClient)
 export default class APIClient {
     public readonly config: ConfigService;
     private readonly tokenService: TokenService;

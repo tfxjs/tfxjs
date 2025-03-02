@@ -24,12 +24,9 @@ If you receive HTTP status code 429, use the Ratelimit-Reset header to learn how
 */
 
 
-import { Service } from "typedi";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import IndividualRateLimiterService from "./IndividualRateLimiter.service";
-import DINames from "../utils/DI.names";
 
-@Service(DINames.RateLimiterService)
 export default class RateLimiterService {
     private readonly logger: Logger;
 

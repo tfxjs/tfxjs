@@ -1,10 +1,9 @@
-import Container, { Inject, Service } from 'typedi';
+import Container from 'typedi';
 import { IListenChannelsProvider, ListenChannelsCallback, ListenChannelSubscriptionResult } from '../types/ListenChannels.provider.types';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import ConfigService from '../services/Config.service';
 
-@Service(DINames.ListenChannelsProvider)
 export default class ListenChannelsProvider {
     private readonly channelProvider: IListenChannelsProvider;
     private readonly config: ConfigService;

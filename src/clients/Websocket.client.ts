@@ -5,10 +5,9 @@ import EventSubClient from "./EventSub.client";
 import TwitchEventId from "../enums/TwitchEventId.enum";
 import ChatCommandsService from "../services/ChatCommands.service";
 import ChatListenersService from "../services/ChatListeners.service";
-import Container, { Inject, Service } from "typedi";
+import Container from "typedi";
 import DINames from "../utils/DI.names";
 
-@Service(DINames.WebsocketClient)
 export default class WebsocketClient {
     private readonly logger: Logger;
 

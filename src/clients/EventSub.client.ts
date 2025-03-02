@@ -6,7 +6,7 @@ import { Logger, LoggerFactory } from '../utils/Logger';
 import WebsocketClient from './Websocket.client';
 import { CreateSubscriptionResponse, DeleteSubscriptionResponse } from '../types/APIClient.types';
 import TwtichPermissionScope from '../enums/TwitchPermissionScope.enum';
-import Container, { Inject, Service } from 'typedi';
+import Container from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
@@ -17,7 +17,6 @@ import GetEventSubSubscriptionsRequestConfigBuilder, { GetEventSubSubscriptionsR
 import DeleteEventSubSubscriptionRequestConfigBuilder from '../builders/api/DeleteEventSubSubscription.request.builder';
 import { UsableToken } from '../types/Token.repository.types';
 
-@Service(DINames.EventSubClient)
 export default class EventSubClient {
     private readonly config: ConfigService;
     private readonly tokenService: TokenService;

@@ -1,4 +1,4 @@
-import Container, { Inject, Service } from 'typedi';
+import Container from 'typedi';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
@@ -9,7 +9,6 @@ import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
 import { CommandsModuleForFeatureConfig } from '../types/Module.types';
 
-@Service(DINames.ChatCommandsService)
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
     private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, CommandsModuleForFeatureConfig>();

@@ -1,9 +1,8 @@
-import Container, { Inject, Service } from "typedi";
+import Container from "typedi";
 import { TChannelOptions, IChannelOptionsProvider, ChannelBaseOptions } from "../types/ChannelOptions.provider";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 
-@Service(DINames.ChannelOptionsProvider)
 export class ChannelOptionsProvider<T extends ChannelBaseOptions & Record<string, any> = ChannelBaseOptions> {
     private readonly optionsProvider: IChannelOptionsProvider<T>;
 

@@ -1,9 +1,8 @@
-import Container, { Inject, Service } from "typedi";
+import Container from "typedi";
 import { AppToken, ITokenRepositoryProvider, UserToken } from "../types/Token.repository.types";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 
-@Service(DINames.TokenRepositoryProvider)
 export default class TokenRepositoryProvider implements ITokenRepositoryProvider {
     private tokenRepository: ITokenRepositoryProvider
 

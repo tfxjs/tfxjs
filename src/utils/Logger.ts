@@ -1,4 +1,4 @@
-import Container, { Inject, Service } from "typedi";
+import Container from "typedi";
 import DINames from "./DI.names";
 import ConfigService from "../services/Config.service";
 

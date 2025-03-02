@@ -1,4 +1,4 @@
-import Container, { Inject, Service } from 'typedi';
+import Container from 'typedi';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
 import { ChatListenerExecution, ChatListenerInstance } from '../types/ChatListener.types';
 import ChannelChatMessageEventData from '../types/EventSub_Events/ChannelChatMessageEventData.types';
@@ -7,7 +7,6 @@ import DINames from '../utils/DI.names';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import { ListenersModuleForFeatureConfig } from '../types/Module.types';
 
-@Service(DINames.ChatListenersService)
 export default class ChatListenersService {
     private static readonly chatListenersContainer = GeneralContainer.getInstance<GeneralFactory, ChatListenerExecution>();
     private static readonly chatListenerRegistry = GeneralRegistry.getInstance<ChatListenerInstance, ListenersModuleForFeatureConfig>();

@@ -1,4 +1,5 @@
-import Container, { Inject, Service } from "typedi";
+import "reflect-metadata";
+import Container from "typedi";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import { ChatDataType, ChatDataTypeMap } from "../types/ChatDataInjector.types";
@@ -6,9 +7,8 @@ import ChannelChatMessageEventData from "../types/EventSub_Events/ChannelChatMes
 import {ChatterUser, PartialTwitchUser, TwitchUser} from "../objects/TwitchUser.object";
 import {ChatMessage, TwitchChatMessage} from "../objects/ChatMessage.object";
 import { ChannelOptionsProvider } from "../providers/ChannelOptions.provider";
-import ListenChannelsProvider, { GetListenerChannelsRefreshFunction } from "../providers/ListenChannels.provider";
+import { GetListenerChannelsRefreshFunction } from "../providers/ListenChannels.provider";
 
-@Service(DINames.ChatDataInjectorService)
 export default class ChatDataInjectorService {
     private readonly logger: Logger;
 
