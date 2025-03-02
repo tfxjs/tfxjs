@@ -1,12 +1,12 @@
-import Container from "typedi";
 import { FetchStrategy } from "../../types/Cache.types";
 import DINames from "../../utils/DI.names";
 import APIClient from "../../clients/Api.client";
+import { DIContainer } from "../../di/Container";
 
 export default class TwitchUserCacheFetchStrategy implements FetchStrategy<any> {
     private readonly apiClient: APIClient;
     constructor() {
-        this.apiClient = Container.get<APIClient>(DINames.APIClient);
+        this.apiClient = DIContainer.get<APIClient>(DINames.APIClient);
     }
 
     fetch(id: string): Promise<any | null> {

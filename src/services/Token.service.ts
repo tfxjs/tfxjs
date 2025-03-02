@@ -1,11 +1,11 @@
 import axios from "axios";
 import { Logger, LoggerFactory } from "../utils/Logger";
 import TwtichPermissionScope from "../enums/TwitchPermissionScope.enum";
-import Container from "typedi";
 import ConfigService from "./Config.service";
 import DINames from "../utils/DI.names";
 import { AppToken, ITokenRepositoryProvider, UsableAppToken, UsableToken, UsableUserToken, UsableUserTokenWithScopes, UserToken } from "../types/Token.repository.types";
 import AccessTokenRequestBuilder from "../builders/auth/AccessToken.request.builder";
+import { DIContainer } from "../di/Container";
 
 export class TokenService {
     private readonly config: ConfigService;
@@ -16,8 +16,8 @@ export class TokenService {
     constructor() {
         this.logger = LoggerFactory.createLogger('TokenService');
 
-        this.config = Container.get<ConfigService>(DINames.ConfigService);
-        this.tokenRepository = Container.get<ITokenRepositoryProvider>(DINames.TokenRepositoryProvider);
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
+        this.tokenRepository = DIContainer.get<ITokenRepositoryProvider>(DINames.TokenRepositoryProvider);
 
         this.logger.debug(`Initialized`);
     }

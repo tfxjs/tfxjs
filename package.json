@@ -59,13 +59,14 @@
         "typescript": "^5.7.2"
     },
     "dependencies": {
+        "@inversifyjs/container": "^1.5.3",
+        "@inversifyjs/core": "^4.0.1",
         "add": "^2.0.6",
         "axios": "^1.7.9",
         "dotenv": "^16.4.7",
         "lodash": "^4.17.21",
         "qs": "^6.14.0",
         "reflect-metadata": "^0.2.2",
-        "typedi": "^0.10.0",
         "ws": "^8.18.0",
         "yarn": "^1.22.22"
     }

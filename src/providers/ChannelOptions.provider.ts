@@ -1,4 +1,4 @@
-import Container from "typedi";
+import { DIContainer } from "../di/Container";
 import { TChannelOptions, IChannelOptionsProvider, ChannelBaseOptions } from "../types/ChannelOptions.provider";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
@@ -11,7 +11,7 @@ export class ChannelOptionsProvider<T extends ChannelBaseOptions & Record<string
     constructor() {
         this.logger = LoggerFactory.createLogger('ChannelOptionsProvider');
 
-        this.optionsProvider = Container.get<IChannelOptionsProvider<T>>(DINames.UserDefinedChannelOptionsProvider);
+        this.optionsProvider = DIContainer.get<IChannelOptionsProvider<T>>(DINames.UserDefinedChannelOptionsProvider);
 
         // TODO: Cache
 

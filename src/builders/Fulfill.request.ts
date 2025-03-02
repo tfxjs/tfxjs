@@ -1,8 +1,8 @@
-import Container from "typedi";
 import BaseRequestBuilder from "./api/Base.request.builder";
 import DINames from "../utils/DI.names";
 import ConfigService from "../services/Config.service";
 import { TokenService } from "../services/Token.service";
+import { DIContainer } from "../di/Container";
 
 /**
  * Function that fulfills the request with the necessary data (client ID, access token related to the user depending on the request)
@@ -10,8 +10,8 @@ import { TokenService } from "../services/Token.service";
  * @returns Request builder with the necessary data {@link BaseRequestBuilder}
  */
 export default async function FulfillRequest<T extends BaseRequestBuilder>(requestBuilder: T, useAppTokenIfNull: boolean = true): Promise<T> {
-    const config = (Container.get(DINames.ConfigService) as ConfigService);
-    const tokenService = (Container.get(DINames.TokenService) as TokenService);
+    const config = (DIContainer.get(DINames.ConfigService) as ConfigService);
+    const tokenService = (DIContainer.get(DINames.TokenService) as TokenService);
 
     requestBuilder.setClientId(config.getClientId());
     const userId = requestBuilder.getUserIdRelatedToToken();

@@ -5,8 +5,8 @@ import EventSubClient from "./EventSub.client";
 import TwitchEventId from "../enums/TwitchEventId.enum";
 import ChatCommandsService from "../services/ChatCommands.service";
 import ChatListenersService from "../services/ChatListeners.service";
-import Container from "typedi";
 import DINames from "../utils/DI.names";
+import { DIContainer } from "../di/Container";
 
 export default class WebsocketClient {
     private readonly logger: Logger;
@@ -26,9 +26,9 @@ export default class WebsocketClient {
 
     private get chatCommandsService(): ChatCommandsService | undefined {
         if (!this._chatCommandsService) {
-            if(Container.has(DINames.ChatCommandsService)) {
+            if(DIContainer.isBound(DINames.ChatCommandsService)) {
                 this.logger.debug('ChatCommandsService found in container');
-                this._chatCommandsService = Container.get(DINames.ChatCommandsService);
+                this._chatCommandsService = DIContainer.get(DINames.ChatCommandsService);
             } else {
                 this.logger.debug('ChatCommandsService not found in container. Skipping...');
             }
@@ -38,9 +38,9 @@ export default class WebsocketClient {
 
     private get chatListenersService(): ChatListenersService | undefined {
         if (!this._chatListenersService) {
-            if(Container.has(DINames.ChatListenersService)) {
+            if(DIContainer.isBound(DINames.ChatListenersService)) {
                 this.logger.debug('ChatListenersService found in container');
-                this._chatListenersService = Container.get(DINames.ChatListenersService);
+                this._chatListenersService = DIContainer.get(DINames.ChatListenersService);
             } else {
                 this.logger.debug('ChatListenersService not found in container. Skipping...');
             }
@@ -151,7 +151,7 @@ export default class WebsocketClient {
         this.sessionId = websocketWelcome.payload.session.id;
         this.logger.info(`Received welcome message. Session ID: ${this.sessionId}`);
 
-        const EventSubClient = Container.get(DINames.EventSubClient) as EventSubClient;
+        const EventSubClient = DIContainer.get(DINames.EventSubClient) as EventSubClient;
         EventSubClient.setupChatListeners();
 
         this.setupKeepAlive(websocketWelcome.payload.session.keepalive_timeout_seconds * 1000);
