@@ -29,7 +29,7 @@ export type CreateEventSubSubscriptionResponse = {
 // Builder
 
 export default class CreateEventSubSubscriptionRequestConfigBuilder<T extends MappedTwitchEventId> extends BaseRequestBuilder {
-    correctResponseCodes: number[] = [200];
+    correctResponseCodes: number[] = [202];
     errorResponseCodes: number[] = [400, 401, 403, 409, 429];
 
     constructor() {
