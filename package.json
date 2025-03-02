@@ -1,6 +1,6 @@
 {
-  "name": "tfxjs",
-  "version": "1.0.0",
+  "name": "@tfxjs/tfxjs",
+  "version": "0.1.0",
   "description": "Framework for creating a bot for twitch",
   "author": "kajahl",
   "homepage": "https://github.com/tfxjs/tfxjs",
