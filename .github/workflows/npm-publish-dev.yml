@@ -50,7 +50,7 @@ jobs:
         run: npm version "${VERSION}-dev.${DEV_VERSION}" --no-git-tag-version
 
       - name: Publish package
-        run: npm publish --tag dev
+        run: npm publish --tag dev --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
