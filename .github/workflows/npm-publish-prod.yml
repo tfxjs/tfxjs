@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RELEASE_VERSION: ""
+      PACKAGE_VERSION: ""
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -29,8 +30,19 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
 
-      - name: Get release version from tag
+      - name: Get release version from GitHub
         run: echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Get version from package.json
+        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Check if package.json version matches GitHub release
+        run: |
+          if [ "${{ env.RELEASE_VERSION }}" != "${{ env.PACKAGE_VERSION }}" ]; then
+            echo "❌ ERROR: package.json version (${{ env.PACKAGE_VERSION }}) does not match GitHub release version (${{ env.RELEASE_VERSION }})"
+            exit 1
+          fi
+        shell: bash
 
       - name: Clean cache
         run: npm cache clean --force
@@ -40,32 +52,8 @@ jobs:
 
       - name: Build project (TypeScript)
         run: npm run build
-
-      - name: Update package.json version
-        run: npm version "${{ env.RELEASE_VERSION }}" --no-git-tag-version
-
-      - name: Commit updated package.json version
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git commit -m "Update package.json version to ${{ env.RELEASE_VERSION }}"
-          git push origin HEAD:main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+        
       - name: Publish package to npm
         run: npm publish --tag latest --access=public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create pull request from main to develop
-        uses: peter-evans/create-pull-request@v7
-        with:
-          title: "Synchronize develop with production release ${{ env.RELEASE_VERSION }}"
-          body: "Automatically create a pull request from main to develop once a new production version is released."
-          base: develop
-          branch: main
-          commit-message: "Synchronize develop with production release ${{ env.RELEASE_VERSION }}"
-          labels: |
-            auto-pr
