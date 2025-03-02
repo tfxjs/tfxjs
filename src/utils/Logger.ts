@@ -24,13 +24,21 @@ export enum ANSI_COLORS {
 
 
 export class LoggerFactory {
+    private static _logger: Logger | null = null;
     private static configService: ConfigService | null = null;
 
+    static get logger(): Logger {
+        if (LoggerFactory._logger === null) LoggerFactory._logger = new Logger('LoggerFactory');
+        return LoggerFactory._logger;
+    }
+
     public static setConfig(configService: ConfigService): void {
+        this.logger.debug('Setting config service');
         this.configService = configService
     }
 
     public static createLogger(name: string, nameColor: ANSI_COLORS = ANSI_COLORS.cyan, messageColor: ANSI_COLORS = ANSI_COLORS.white): Logger {
+        this.logger.debug(`Creating logger for ${name}`);
         return new Logger(name, nameColor, messageColor, this.configService);
     }
 }
