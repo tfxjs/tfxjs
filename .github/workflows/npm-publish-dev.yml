@@ -25,10 +25,10 @@ jobs:
       - name: Clean cache
         run: npm cache clean --force
 
-      - name: Instalacja zależności
+      - name: Install dependencies
         run: npm install
   
-      - name: Budowanie projektu (TypeScript)
+      - name: Build project (TypeScript)
         run: npm run build
   
       - name: Get production version
