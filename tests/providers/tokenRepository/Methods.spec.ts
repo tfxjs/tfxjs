@@ -6,7 +6,7 @@ jest.mock('../../../src/utils/Logger', () => ({
     },
 }));
 
-import { Container } from 'typedi';
+import { Container } from '@inversifyjs/container';
 import TokenRepositoryProvider from '../../../src/providers/Token.repository.provider';
 import { AppToken, ITokenRepositoryProvider, UserToken } from '../../../src/types/Token.repository.types';
 import DINames from '../../../src/utils/DI.names';
@@ -48,9 +48,12 @@ describe('TokenRepositoryProvider: Methods', () => {
             removeUserRefreshToken: jest.fn().mockResolvedValue(undefined),
         } as unknown as ITokenRepositoryProvider;
 
-        Container.set(DINames.UserDefinedTokenRepositoryProvider, tokenRepository);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
+            if (id === DINames.UserDefinedTokenRepositoryProvider) return tokenRepository;
+            return null;
+        });
 
-        tokenRepositoryProvider = new TokenRepositoryProvider(tokenRepository);
+        tokenRepositoryProvider = new TokenRepositoryProvider();
     });
 
     afterEach(() => {

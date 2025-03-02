@@ -11,17 +11,17 @@ jest.mock('../../../src/utils/Logger', () => ({
     },
 }));
 
-import Container from 'typedi';
 import WebsocketClient from '../../../src/clients/Websocket.client';
 import DINames from '../../../src/utils/DI.names';
 import { WebsocketMessageType } from '../../../src/types/Websocket.types';
+import { Container } from '@inversifyjs/container';
 
 describe('WebsocketClient: Handle methods', () => {
     let websocketClient: WebsocketClient;
 
     beforeEach(() => {
-        jest.spyOn(Container, 'has').mockReturnValue(true);
-        jest.spyOn(Container, 'get').mockImplementation((id: any) => {
+        jest.spyOn(Container.prototype, 'isBound').mockReturnValue(true);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
             if (id === DINames.EventSubClient) return { setupChatListeners: jest.fn() };
             return null;
         });

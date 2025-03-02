@@ -1,11 +1,11 @@
-import { Container } from 'typedi';
+import { Container } from '@inversifyjs/container';
 import ListenChannelsProvider, { GetListenerChannelsRefreshFunction } from '../../../src/providers/ListenChannels.provider';
 import DINames from '../../../src/utils/DI.names';
 
 describe('ListenChannelsProvider: Functions', () => {
     beforeEach(() => {
-        jest.spyOn(Container, 'has').mockReturnValue(true);
-        jest.spyOn(Container, 'get').mockImplementation((id: any) => {
+        jest.spyOn(Container.prototype, 'isBound').mockReturnValue(true);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
             if (id === DINames.ListenChannelsProvider) return ListenChannelsProvider.prototype;
             return null;
         });

@@ -6,7 +6,7 @@ jest.mock('../../../src/utils/Logger', () => ({
     },
 }));
 
-import { Container } from 'typedi';
+import { Container } from '@inversifyjs/container';
 import ListenChannelsProvider from '../../../src/providers/ListenChannels.provider';
 import { IListenChannelsProvider, ListenChannelSubscriptionResult } from '../../../src/types/ListenChannels.provider.types';
 import ConfigService from '../../../src/services/Config.service';
@@ -30,14 +30,14 @@ describe('ListenChannelsProvider: Methods', () => {
             getConfig: jest.fn().mockReturnValue({ userId }),
         } as unknown as ConfigService;
 
-        jest.spyOn(Container, 'has').mockReturnValue(true);
-        jest.spyOn(Container, 'get').mockImplementation((id: any) => {
+        jest.spyOn(Container.prototype, 'isBound').mockReturnValue(true);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
             if (id === DINames.UserDefinedListenChannelsProvider) return channelProvider;
             if (id === DINames.ConfigService) return configService;
             return null;
         });
 
-        listenChannelsProvider = new ListenChannelsProvider(channelProvider, configService);
+        listenChannelsProvider = new ListenChannelsProvider();
     });
 
     afterEach(() => {

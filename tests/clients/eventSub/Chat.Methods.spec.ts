@@ -15,6 +15,8 @@ import ListenChannelsProvider from '../../../src/providers/ListenChannels.provid
 import WebsocketClient from '../../../src/clients/Websocket.client';
 import NotFoundError from '../../../src/errors/NotFound.error';
 import TwitchEventId from '../../../src/enums/TwitchEventId.enum';
+import { Container } from '@inversifyjs/container';
+import DINames from '../../../src/utils/DI.names';
 
 describe('EventSubClient: Chat Methods', () => {
     let eventSubClient: EventSubClient;
@@ -51,7 +53,15 @@ describe('EventSubClient: Chat Methods', () => {
 
         websocketClient = {} as unknown as WebsocketClient;
 
-        eventSubClient = new EventSubClient(configService, tokenService, listenChannelsProvider, websocketClient);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
+            if (id === DINames.ConfigService) return configService;
+            if (id === DINames.TokenService) return tokenService;
+            if (id === DINames.ListenChannelsProvider) return listenChannelsProvider;
+            if (id === DINames.WebsocketClient) return websocketClient;
+            return null;
+        });
+
+        eventSubClient = new EventSubClient();
     });
 
     afterEach(() => {

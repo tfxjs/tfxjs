@@ -9,6 +9,8 @@ jest.mock('../../../src/utils/Logger', () => ({
 import ListenChannelsProvider from '../../../src/providers/ListenChannels.provider';
 import { IListenChannelsProvider, ListenChannelsCallback } from '../../../src/types/ListenChannels.provider.types';
 import ConfigService from '../../../src/services/Config.service';
+import { Container } from '@inversifyjs/container';
+import DINames from '../../../src/utils/DI.names';
 
 describe('ListenChannelsProvider: Observer pattern', () => {
     let listenChannelsProvider: ListenChannelsProvider;
@@ -23,10 +25,17 @@ describe('ListenChannelsProvider: Observer pattern', () => {
         configService = {} as unknown as ConfigService;
 
         channelProvider = {
+            getChannelIds: jest.fn(),
             getRefreshInterval: jest.fn().mockReturnValue(60000),
-        } as unknown as IListenChannelsProvider;
+        } as IListenChannelsProvider;
 
-        listenChannelsProvider = new ListenChannelsProvider(channelProvider, configService);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
+            if (id === DINames.ConfigService) return configService;
+            if (id === DINames.UserDefinedListenChannelsProvider) return channelProvider;
+            return null;
+        });
+
+        listenChannelsProvider = new ListenChannelsProvider();
     });
 
     afterEach(() => {

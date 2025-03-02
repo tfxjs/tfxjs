@@ -6,11 +6,11 @@ jest.mock('../../../src/utils/Logger', () => ({
     },
 }));
 
-import { Container } from 'typedi';
 import DINames from '../../../src/utils/DI.names';
 import { ChannelOptionsProvider } from '../../../src/providers/ChannelOptions.provider';
 import { IChannelOptionsProvider, TChannelOptions } from '../../../src/types/ChannelOptions.provider';
 import ConfigService from '../../../src/services/Config.service';
+import { Container } from '@inversifyjs/container';
 
 type ChannelExtendedOptions = TChannelOptions<{ test: string }>;
 
@@ -34,10 +34,13 @@ describe('ChannelOptionsProvider: Methods', () => {
             getConfig: jest.fn(),
         } as unknown as ConfigService;
 
-        Container.set(DINames.UserDefinedChannelOptionsProvider, optionsProvider);
-        Container.set(DINames.ConfigService, configService);
+        jest.spyOn(Container.prototype, 'get').mockImplementation((id: any) => {
+            if (id === DINames.ConfigService) return configService;
+            if (id === DINames.UserDefinedChannelOptionsProvider) return optionsProvider;
+            return null;
+        });
 
-        channelOptionsProvider = new ChannelOptionsProvider(optionsProvider, configService);
+        channelOptionsProvider = new ChannelOptionsProvider();
     });
 
     afterEach(() => {
