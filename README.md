@@ -1,3 +1,5 @@
+Przejdź do [Polskiej wersji](https://github.com/tfxjs/tfxjs/blob/main/README_PL.md)  
+
 # Twitch Framework x JS 
 
 TFxJS is an advanced tool for creating bots on the Twitch platform. It aims to simplify event management, Twitch API integration and command handling, allowing developers to focus on implementing the bot's core logic. The framework provides an intuitive structure, modularity and easy configuration, making it an ideal choice for both novice and advanced bot developers.
@@ -32,7 +34,7 @@ If you are interested in developing the project and want to contribute, please c
 
 ## License
 
-The project is licensed under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International** (**CC BY-NC-SA 4.0**). This means that you are free to use the code as you wish, subject to attribution of authorship, but you may not use it for commercial purposes. See [NOTICE.md](./NOTICE.md) for details.
+The project is licensed under **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International** (**CC BY-NC-SA 4.0**). This means that you are free to use the code as you wish, subject to attribution of authorship, but you may not use it for commercial purposes. See [NOTICE.md](https://github.com/tfxjs/tfxjs/blob/main/NOTICE.md) for details.
 
 ---
 

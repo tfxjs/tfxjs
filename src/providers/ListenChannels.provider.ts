@@ -54,12 +54,13 @@ export default class ListenChannelsProvider {
         return channels;
     }
 
+    // TODO: Wystaw do użycia - rozwiązuje to jeden feature z issue #2 https://github.com/tfxjs/tfxjs/issues/2
     /**
      * Refresh channels and emit event if there are any changes
      * @returns True if channels were updated, false otherwise
      */
     async refreshChannels(): Promise<boolean> {
-        this.logger.debug('Refreshing channels');
+        this.logger.info('Refreshing channels');
         const channelIds = await this.getChannelIds();
         const lastChannelIds = this._lastChannelIds;
 
@@ -148,4 +149,9 @@ export default class ListenChannelsProvider {
         this.callbacks = this.callbacks.filter((cb) => cb !== callback);
         this.logger.debug(`Removed callback`);
     }
+}
+
+export function GetListenerChannelsRefreshFunction(): typeof ListenChannelsProvider.prototype.refreshChannels {
+    const provider = Container.get(DINames.ListenChannelsProvider) as ListenChannelsProvider;
+    return provider.refreshChannels.bind(provider);
 }
