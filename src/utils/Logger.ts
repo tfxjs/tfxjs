@@ -1,6 +1,6 @@
-import Container, { Inject, Service } from "typedi";
 import DINames from "./DI.names";
 import ConfigService from "../services/Config.service";
+import { DIContainer } from "../di/Container";
 
 export enum LogLevel {
     NORMAL = 'normal',
@@ -54,8 +54,8 @@ export class Logger {
     }
 
     private canShowLogLevel(type: LogLevel): boolean {
-        if(!Container.has(DINames.ConfigService)) return true;
-        this.configService = Container.get(DINames.ConfigService);
+        if(!DIContainer.isBound(DINames.ConfigService)) return true;
+        this.configService = DIContainer.get(DINames.ConfigService);
         if(this.configService === null) return true;
         const config = this.configService.getConfig()
         if (!config.log) return true;

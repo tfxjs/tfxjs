@@ -1,5 +1,4 @@
 import { TokenService } from '../services/Token.service';
-import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import { Logger, LoggerFactory } from '../utils/Logger';
@@ -8,6 +7,7 @@ import MakeRequest from '../builders/Make.request';
 import SendChatMessageRequestConfigBuilder, { SendChatMessageResponse } from '../builders/api/SendChatMessage.request.builder';
 import FulfillRequest from '../builders/Fulfill.request';
 import { UsableAppToken, UsableUserToken } from '../types/Token.repository.types';
+import { DIContainer } from '../di/Container';
 
 /*
 
@@ -15,7 +15,6 @@ APIClient służy TYLKO do wywołań z tokenem userId (czyli użytkownika bota) 
 
 */
 
-@Service(DINames.APIClient)
 export default class APIClient {
     public readonly config: ConfigService;
     private readonly tokenService: TokenService;
@@ -25,8 +24,8 @@ export default class APIClient {
     constructor() {
         this.logger = LoggerFactory.createLogger('APIClient');
 
-        this.config = Container.get<ConfigService>(DINames.ConfigService);
-        this.tokenService = Container.get<TokenService>(DINames.TokenService);
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
+        this.tokenService = DIContainer.get<TokenService>(DINames.TokenService);
 
         this.logger.debug('Initialized');
     }

@@ -1,4 +1,3 @@
-import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import { GeneralContainer, GeneralFactory, GeneralRegistry, GeneralRegistryEntry } from '../types/Decorator.storage.types';
@@ -8,8 +7,8 @@ import { ChannelOptionsProvider } from '../providers/ChannelOptions.provider';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
 import { CommandsModuleForFeatureConfig } from '../types/Module.types';
+import { DIContainer } from '../di/Container';
 
-@Service(DINames.ChatCommandsService)
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
     private static readonly chatCommandRegistry = GeneralRegistry.getInstance<ChatCommandInstance, CommandsModuleForFeatureConfig>();
@@ -63,10 +62,10 @@ export default class ChatCommandsService {
     constructor() {
         this.logger = LoggerFactory.createLogger('ChatCommandsService');
 
-        this.apiClient = Container.get<APIClient>(DINames.APIClient);
-        this.channelOptionsProvider = Container.get<ChannelOptionsProvider>(DINames.ChannelOptionsProvider);
-        this.chatDataInjector = Container.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
-        const commands = Container.get<ChatCommandExecution[]>(DINames.Commands);
+        this.apiClient = DIContainer.get<APIClient>(DINames.APIClient);
+        this.channelOptionsProvider = DIContainer.get<ChannelOptionsProvider>(DINames.ChannelOptionsProvider);
+        this.chatDataInjector = DIContainer.get<ChatDataInjectorService>(DINames.ChatDataInjectorService);
+        const commands = DIContainer.get<ChatCommandExecution[]>(DINames.Commands);
 
         commands.forEach((command) => {
             ChatCommandsService.getChatCommandsContainer().enable(command);

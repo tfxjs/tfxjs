@@ -1,10 +1,9 @@
-import Container, { Inject, Service } from 'typedi';
 import { IListenChannelsProvider, ListenChannelsCallback, ListenChannelSubscriptionResult } from '../types/ListenChannels.provider.types';
 import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import ConfigService from '../services/Config.service';
+import { DIContainer } from '../di/Container';
 
-@Service(DINames.ListenChannelsProvider)
 export default class ListenChannelsProvider {
     private readonly channelProvider: IListenChannelsProvider;
     private readonly config: ConfigService;
@@ -15,8 +14,8 @@ export default class ListenChannelsProvider {
     constructor() {
         this.logger = LoggerFactory.createLogger('ListenChannelsProvider');
 
-        this.channelProvider = Container.get<IListenChannelsProvider>(DINames.UserDefinedListenChannelsProvider);
-        this.config = Container.get<ConfigService>(DINames.ConfigService);
+        this.channelProvider = DIContainer.get<IListenChannelsProvider>(DINames.UserDefinedListenChannelsProvider);
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
 
         this.setupRefreshInterval();
         this.setupApiCheckInterval();
@@ -157,6 +156,6 @@ export default class ListenChannelsProvider {
 }
 
 export function GetListenerChannelsRefreshFunction(): typeof ListenChannelsProvider.prototype.refreshChannels {
-    const provider = Container.get(DINames.ListenChannelsProvider) as ListenChannelsProvider;
+    const provider = DIContainer.get(DINames.ListenChannelsProvider) as ListenChannelsProvider;
     return provider.refreshChannels.bind(provider);
 }

@@ -1,9 +1,8 @@
-import Container, { Inject, Service } from "typedi";
+import { DIContainer } from "../di/Container";
 import { AppToken, ITokenRepositoryProvider, UserToken } from "../types/Token.repository.types";
 import DINames from "../utils/DI.names";
 import { Logger, LoggerFactory } from "../utils/Logger";
 
-@Service(DINames.TokenRepositoryProvider)
 export default class TokenRepositoryProvider implements ITokenRepositoryProvider {
     private tokenRepository: ITokenRepositoryProvider
 
@@ -12,7 +11,7 @@ export default class TokenRepositoryProvider implements ITokenRepositoryProvider
     constructor() {
         this.logger = LoggerFactory.createLogger('TokenRepositoryProvider');
 
-        this.tokenRepository = Container.get<ITokenRepositoryProvider>(DINames.UserDefinedTokenRepositoryProvider);
+        this.tokenRepository = DIContainer.get<ITokenRepositoryProvider>(DINames.UserDefinedTokenRepositoryProvider);
 
         this.logger.debug(`Initialized`);
     }

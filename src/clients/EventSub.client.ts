@@ -6,7 +6,6 @@ import { Logger, LoggerFactory } from '../utils/Logger';
 import WebsocketClient from './Websocket.client';
 import { CreateSubscriptionResponse, DeleteSubscriptionResponse } from '../types/APIClient.types';
 import TwtichPermissionScope from '../enums/TwitchPermissionScope.enum';
-import Container, { Inject, Service } from 'typedi';
 import DINames from '../utils/DI.names';
 import ConfigService from '../services/Config.service';
 import ListenChannelsProvider from '../providers/ListenChannels.provider';
@@ -16,8 +15,8 @@ import CreateEventSubSubscriptionRequestConfigBuilder from '../builders/api/Crea
 import GetEventSubSubscriptionsRequestConfigBuilder, { GetEventSubSubscriptionsResponse } from '../builders/api/GetEventSubSubscriptions.request.builder';
 import DeleteEventSubSubscriptionRequestConfigBuilder from '../builders/api/DeleteEventSubSubscription.request.builder';
 import { UsableToken } from '../types/Token.repository.types';
+import { DIContainer } from '../di/Container';
 
-@Service(DINames.EventSubClient)
 export default class EventSubClient {
     private readonly config: ConfigService;
     private readonly tokenService: TokenService;
@@ -29,10 +28,10 @@ export default class EventSubClient {
     constructor() {
         this.logger = LoggerFactory.createLogger('EventSubClient');
 
-        this.config = Container.get<ConfigService>(DINames.ConfigService);
-        this.tokenService = Container.get<TokenService>(DINames.TokenService);
-        this.listenChannelsProvider = Container.get<ListenChannelsProvider>(DINames.ListenChannelsProvider);
-        this.websocketClient = Container.get<WebsocketClient>(DINames.WebsocketClient);
+        this.config = DIContainer.get<ConfigService>(DINames.ConfigService);
+        this.tokenService = DIContainer.get<TokenService>(DINames.TokenService);
+        this.listenChannelsProvider = DIContainer.get<ListenChannelsProvider>(DINames.ListenChannelsProvider);
+        this.websocketClient = DIContainer.get<WebsocketClient>(DINames.WebsocketClient);
 
         this.logger.debug('Initialized');
     }
