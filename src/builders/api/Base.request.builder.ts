@@ -1,5 +1,5 @@
-import axios, { AxiosRequestConfig, Method } from 'axios';
-import { Logger } from '../../utils/Logger';
+import { AxiosRequestConfig, Method } from 'axios';
+import { LoggerFactory } from '../../utils/Logger';
 import qs from 'qs';
 import { UsableToken } from '../../types/Token.repository.types';
 
@@ -19,7 +19,7 @@ export default abstract class BaseRequestBuilder {
         public readonly tokenRelatedIdQueryField: string | null = null,
         public readonly tokenRelatedIdDataField: string | null = null
     ) {
-        const logger = new Logger('BaseRequestBuilder:Constructor');
+        const logger = LoggerFactory.createLogger('BaseRequestBuilder:Constructor');
         logger.debug(`Creating request builder for ${method} ${url}`);
 
         if (tokenRelatedIdDataField && tokenRelatedIdQueryField) {

@@ -22,7 +22,7 @@ export default class ChatCommandsService {
     }
 
     static registerCommand(target: any, options: Required<CommandsModuleForFeatureConfig>): void {
-        const logger = new Logger('ChatCommandsService:RegisterCommand');
+        const logger = LoggerFactory.createLogger('ChatCommandsService:RegisterCommand');
         logger.log(`Registering command ${options.name}`);
 
         // Register the command in the container
