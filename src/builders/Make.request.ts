@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Logger } from '../utils/Logger';
 import BaseRequestBuilder from './api/Base.request.builder';
 import DINames from '../utils/DI.names';
@@ -21,26 +21,19 @@ export default async function MakeRequest<T>(requestBuilder: BaseRequestBuilder,
         throw new Error(errorMessage);
     }
 
+    let response: Promise<AxiosResponse> | null = null;
+
     // if APIRateLimiter is configured
     if (DIContainer.isBound(DINames.RateLimiterService)) {
-        const ratelimiter = DIContainer.get(DINames.RateLimiterService) as RateLimiterService;
-        const individualRateLimiter = usedToken.isApp ? ratelimiter.forApp() : ratelimiter.forUser(usedToken.userId);
-        return await individualRateLimiter
-            .send<T>(requestConfig, priority)
-            .then((response) => {
-                logger.debug(`Successfully received response [${response.status}]`);
-                return response.data;
-            })
-            .catch((error) => {
-                const errorMessage = `Error while making request [${error.response.status}]: ${error.response.data.message}`;
-                logger.error(errorMessage);
-                throw new Error(errorMessage);
-            });
+        response = MakeRequestWithAPIRateLimiter<T>(requestConfig, usedToken, priority);
     }
 
     // if APIRateLimiter is not configured
-    return await axios
-        .request(requestConfig)
+    else {
+        response = MakeRequestWithAxios<T>(requestConfig);
+    }
+
+    return response
         .then((response) => {
             logger.debug(`Successfully received response [${response.status}]`);
             return response.data;
@@ -50,4 +43,14 @@ export default async function MakeRequest<T>(requestBuilder: BaseRequestBuilder,
             logger.error(errorMessage);
             throw new Error(errorMessage);
         });
+}
+
+export async function MakeRequestWithAxios<T>(requestConfig: any): Promise<AxiosResponse> {
+    return await axios.request(requestConfig)
+}
+
+export async function MakeRequestWithAPIRateLimiter<T>(requestConfig: any, usedToken: any, priority: RequestPriority = RequestPriority.Medium): Promise<AxiosResponse> {
+    const ratelimiter = DIContainer.get(DINames.RateLimiterService) as RateLimiterService;
+    const individualRateLimiter = usedToken.isApp ? ratelimiter.forApp() : ratelimiter.forUser(usedToken.userId);
+    return individualRateLimiter.send<T>(requestConfig, priority);
 }
