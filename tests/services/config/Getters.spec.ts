@@ -1,5 +1,18 @@
+import { loggerMock } from '../../mocks/Logger.mock';
+
+import { LogLevel, LoggerFactory } from '../../../src/utils/Logger';
+
+jest.mock('../../../src/utils/Logger', () => {
+    const originalModule = jest.requireActual('../../../src/utils/Logger');
+    return {
+        ...originalModule,
+        LoggerFactory: {
+            createLogger: jest.fn(() => loggerMock),
+        },
+    };
+});
+
 import ConfigService from "../../../src/services/Config.service";
-import { LogLevel } from "../../../src/utils/Logger";
 
 describe('ConfigService: Getters', () => {
     let configService: ConfigService;
