@@ -20,7 +20,7 @@ export default class ChatListenersService {
     }
 
     static registerListener(target: any, options: Required<ListenersModuleForFeatureConfig>): void {
-        const logger = new Logger('ChatListenerDecorator:RegisterListener');
+        const logger = LoggerFactory.createLogger('ChatListenerDecorator:RegisterListener');
         logger.debug(`Registering listener ${options.name}`);
 
         // Register the listener in the container

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { Logger } from '../utils/Logger';
+import { LoggerFactory } from '../utils/Logger';
 import BaseRequestBuilder from './api/Base.request.builder';
 import DINames from '../utils/DI.names';
 import RateLimiterService from '../services/RateLimiter.service';
@@ -11,7 +11,7 @@ let counter = 0;
 export default async function MakeRequest<T>(requestBuilder: BaseRequestBuilder, priority: RequestPriority = RequestPriority.Medium): Promise<T> {
     const requestConfig = requestBuilder.build();
 
-    const logger = new Logger(`MakeRequest:${counter++}`);
+    const logger = LoggerFactory.createLogger(`MakeRequest:${counter++}`);
     logger.debug(`Making request to ${requestConfig.method} ${requestConfig.url}`);
 
     const usedToken = requestBuilder.getUsedToken();
