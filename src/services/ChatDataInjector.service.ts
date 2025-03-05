@@ -38,11 +38,15 @@ export default class ChatDataInjectorService {
             [ChatDataType.BROADCASTER]: (data: ChannelChatMessageEventData) => new TwitchUser(data.broadcaster_user_id),
             [ChatDataType.MESSAGE_DATA]: (data: ChannelChatMessageEventData) => new ChatMessage(data),
             [ChatDataType.MESSAGE]: (data: ChannelChatMessageEventData) => new TwitchChatMessage(data),
+            // TODO: Remove
             [ChatDataType.OPTIONS_PROVIDER]: (data: ChannelChatMessageEventData) => DIContainer.get(DINames.ChannelOptionsProvider),
+            // TODO: Remove
             [ChatDataType.CHANNEL_OPTIONS]: async (data: ChannelChatMessageEventData) => {
                 const provider = DIContainer.get(DINames.ChannelOptionsProvider) as ChannelOptionsProvider;
                 return await provider.getChannelOptions(data.broadcaster_user_id);
             },
+            // TODO: This is the same as CHANNEL_OPTIONS - Better name
+            [ChatDataType.OPTIONS_MANAGER]: (data: ChannelChatMessageEventData) => DIContainer.get(DINames.ChannelOptionsProvider),
             [ChatDataType.API_CLIENT]: (data: ChannelChatMessageEventData) => DIContainer.get(DINames.APIClient),
             [ChatDataType.REFRESH_CHAT_LISTENERS]: (data: ChannelChatMessageEventData) => GetListenerChannelsRefreshFunction()
         };
