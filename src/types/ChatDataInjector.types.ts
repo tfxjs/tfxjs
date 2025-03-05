@@ -19,8 +19,10 @@ export enum ChatDataType {
     MESSAGE_DATA = 'MESSAGE_DATA', // Message object (data type: ChatMessage)
     MESSAGE = 'MESSAGE', // Message content (data type: TwitchChatMessage)
 
-    OPTIONS_PROVIDER = 'OPTIONS_PROVIDER', // Channel options provider
-    CHANNEL_OPTIONS = 'CHANNEL_OPTIONS', // Channel options
+    OPTIONS_PROVIDER = 'OPTIONS_PROVIDER', // Channel options provider //TODO: Remove
+    CHANNEL_OPTIONS = 'CHANNEL_OPTIONS', // Channel options //TODO: Remove
+
+    OPTIONS_MANAGER = 'OPTIONS_MANAGER', // Channel options manager
 
     API_CLIENT = 'API_CLIENT', // Twitch API client
 
@@ -40,8 +42,10 @@ export type ChatDataTypeMap = {
     [ChatDataType.MESSAGE_DATA]: ChatMessage;
     [ChatDataType.MESSAGE]: TwitchChatMessage;
 
-    [ChatDataType.OPTIONS_PROVIDER]: ChannelOptionsProvider;
-    [ChatDataType.CHANNEL_OPTIONS]: Record<string, any>; // ChannelBaseOptions & ExtendedByUser
+    [ChatDataType.OPTIONS_PROVIDER]: ChannelOptionsProvider; // TODO: Remove
+    [ChatDataType.CHANNEL_OPTIONS]: Record<string, any>; // ChannelBaseOptions & ExtendedByUser // TODO: Remove
+
+    [ChatDataType.OPTIONS_MANAGER]: ChannelOptionsProvider;
 
     [ChatDataType.API_CLIENT]: APIClient;
 
