@@ -1,7 +1,7 @@
 name: Feature Request
 description: Propose a new feature or enhancement.
 title: "[Feature]: "
-labels: ["Enhancement"]
+labels: ["enhancement", "feature request"]
 # projects: ["kajahl/4"]
 assignees:
   - kajahl
@@ -19,6 +19,24 @@ body:
       value: "I propose a new feature..."
     validations:
       required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Not applicable
+        - Low
+        - Medium
+        - High
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe a real-world scenario where this feature would be useful.
+      placeholder: "This feature would help in situations like..."
   - type: textarea
     id: current-behavior
     attributes:
