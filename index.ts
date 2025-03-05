@@ -47,6 +47,7 @@ import {
 // ==========================
 import PingCommand from './src/example/commands/Ping.command';
 import ExampleCommand from './src/example/commands/Example.command';
+import PrefixCommand from './src/example/commands/Prefix.command';
 
 // ==========================
 //     Listener Interfaces
@@ -74,7 +75,7 @@ import {
     MessageUser,
     BroadcasterData, Broadcaster,
     MessageData, Mess,
-    OptionsProvider, ChannelOptions,
+    OptionsProvider, ChannelOptions, OptionsManager,
     API, RefreshChatListeners
 } from './src/decorators/ChatData.decorators';
 
@@ -188,6 +189,7 @@ export {
     // Example Commands
     PingCommand,
     ExampleCommand,
+    PrefixCommand,
 
     // Listener Interfaces
     ChatListenerExecution,
@@ -205,7 +207,7 @@ export {
     MessageUser,
     BroadcasterData, Broadcaster,
     MessageData, Mess,
-    OptionsProvider, ChannelOptions,
+    OptionsProvider, ChannelOptions, OptionsManager,
     API, RefreshChatListeners,
 
     // Chat Data Injector Objects
