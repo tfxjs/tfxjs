@@ -26,8 +26,18 @@ const Broadcaster = CreateChatDataDecorator(ChatDataType.BROADCASTER);
 const MessageData = CreateChatDataDecorator(ChatDataType.MESSAGE_DATA);
 const Mess = CreateChatDataDecorator(ChatDataType.MESSAGE);
 const MessageUser = CreateChatDataDecorator(ChatDataType.MESSAGE_USER);
+
+/**
+ * @deprecated Use a `OptionsManager` decorator instead.
+ */
 const OptionsProvider = CreateChatDataDecorator(ChatDataType.OPTIONS_PROVIDER);
+/**
+ * @deprecated Use a `OptionsManager` decorator instead.
+ */
 const ChannelOptions = CreateChatDataDecorator(ChatDataType.CHANNEL_OPTIONS);
+
+const OptionsManager = CreateChatDataDecorator(ChatDataType.OPTIONS_MANAGER);
+
 const API = CreateChatDataDecorator(ChatDataType.API_CLIENT);
 const RefreshChatListeners = CreateChatDataDecorator(ChatDataType.REFRESH_CHAT_LISTENERS);
 
@@ -37,7 +47,7 @@ export {
     MessageUser,
     BroadcasterData, Broadcaster,
     MessageData, Mess,
-    OptionsProvider, ChannelOptions,
+    OptionsProvider, ChannelOptions, OptionsManager,
     API,
     RefreshChatListeners
 };
