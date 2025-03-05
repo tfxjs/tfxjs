@@ -10,41 +10,33 @@ jest.mock('../../src/utils/Logger', () => {
 
 jest.mock('../../src/builders/Make.request', () => {
     const originalModule = jest.requireActual('../../src/builders/Make.request');
-    console.warn(originalModule);
-
     return {
         __esModule: true, // This line ensures the module is treated as an ES module
-        ...originalModule,
-        MakeRequestWithAxios: jest.fn(),
-        MakeRequestWithAPIRateLimiter: jest.fn(),
         default: originalModule.default
     };
 });
 
 jest.mock('axios');
+jest.mock('../../src/builders/Make.Axios.request');
+jest.mock('../../src/builders/Make.RateLimiter.request');
 
-import MakeRequest, { MakeRequestWithAxios, MakeRequestWithAPIRateLimiter } from '../../src/builders/Make.request';
+import MakeRequest from '../../src/builders/Make.request';
 import BaseRequestBuilder from '../../src/builders/api/Base.request.builder';
-import { UsableAppToken, UsableUserToken } from '../../src/types/Token.repository.types';
+import { UsableToken } from '../../src/types/Token.repository.types';
 import { Container } from '@inversifyjs/container';
-import DINames from '../../src/utils/DI.names';
-import RateLimiterService from '../../src/services/RateLimiter.service';
+import MakeRequestWithAxios from '../../src/builders/Make.Axios.request';
+import MakeRequestWithAPIRateLimiter from '../../src/builders/Make.RateLimiter.request';
+import { AxiosResponse } from 'axios';
 
 describe('MakeRequest', () => {
     let requestBuilder: BaseRequestBuilder;
-
-    const requestConfig = {
-        method: 'GET',
-        url: 'https://api.example.com',
-    };
-
-    const appToken : UsableAppToken = { token: 'appToken', isApp: true };
-    const userToken : UsableUserToken = { token: 'userToken', isApp: false, userId: 'userId' };
+    let makeAxiosRequestMock = MakeRequestWithAxios as jest.MockedFunction<typeof MakeRequestWithAxios>;
+    let makeRequestWithAPIRateLimiterMock = MakeRequestWithAPIRateLimiter as jest.MockedFunction<typeof MakeRequestWithAPIRateLimiter>;
 
     beforeEach(() => {
         requestBuilder = {
-            build: jest.fn().mockReturnValue(requestConfig),
-            getUsedToken: jest.fn().mockReturnValue(userToken),
+            build: jest.fn().mockReturnValue({ method: 'GET', url: 'http://example.com' } as any),
+            getUsedToken: jest.fn()
         } as unknown as BaseRequestBuilder;
     });
 
@@ -53,8 +45,7 @@ describe('MakeRequest', () => {
     });
 
     it('should fail if no token is found', async () => {
-        requestBuilder.getUsedToken = jest.fn().mockReturnValue(null);
-
+        jest.spyOn(requestBuilder, 'getUsedToken').mockReturnValue(null);
         await expect(MakeRequest(requestBuilder)).rejects.toThrow();
     });
 
@@ -68,17 +59,16 @@ describe('MakeRequest', () => {
         });
 
         it('should make request with axios', async () => {
-            const data = { data: 'response' };
-            (MakeRequestWithAxios as jest.Mock).mockResolvedValue({ status: 200, data });
+            const response = { status: 200, data: 'response' };
+            makeAxiosRequestMock.mockResolvedValue(response as AxiosResponse);
 
-            const response = await MakeRequest(requestBuilder);
-            expect(response).toBe(data);
+            const request = await MakeRequest(requestBuilder);
+            expect(request).toBe(response.data);
         });
 
         it('should fail if request fails', async () => {
-            const error = new Error('Request failed');
-            (MakeRequestWithAxios as jest.Mock).mockRejectedValue(error);
-
+            makeAxiosRequestMock.mockRejectedValue(new Error('Request failed'));
+            jest.spyOn(requestBuilder, 'getUsedToken').mockReturnValue({} as UsableToken);
             await expect(MakeRequest(requestBuilder)).rejects.toThrow();
         });
     });
@@ -90,11 +80,11 @@ describe('MakeRequest', () => {
 
         afterEach(() => {
             jest.clearAllMocks();
-        });    
+        });
 
         it('should make request with rate limiter', async () => {
             const response = { status: 200, data: 'response' };
-            (MakeRequestWithAPIRateLimiter as jest.Mock).mockResolvedValue(response);
+            makeRequestWithAPIRateLimiterMock.mockResolvedValue(response as AxiosResponse);
 
             const request = await MakeRequest(requestBuilder);
             expect(request).toBe(response.data);
@@ -102,7 +92,7 @@ describe('MakeRequest', () => {
 
         it('should fail if request fails', async () => {
             const error = { response: { status: 500, data: { message: 'Request failed' } } };
-            (MakeRequestWithAPIRateLimiter as jest.Mock).mockRejectedValue(error);
+            makeRequestWithAPIRateLimiterMock.mockRejectedValue(error);
 
             await expect(MakeRequest(requestBuilder)).rejects.toThrow();
         });
