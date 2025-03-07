@@ -12,7 +12,14 @@ export interface ITwitchBotOptions {
     };
     userId: string;
     modules: IModuleDefinition[];
-    log: {
+
+    /**
+     * @deprecated This field is deprecated and will be removed in future versions. Use `LogModule` instead.
+     */
+    log?: {
+        /**
+         * @deprecated This field is deprecated and will be removed in future versions. Use `LogModule` instead.
+         */
         levels: LogLevel[];
     };
 }
@@ -21,12 +28,19 @@ export function TwitchBot(options: ITwitchBotOptions): ClassDecorator {
     return (target: any) => {
         if (DIContainer.isBound(DINames.ConfigService)) throw new Error(`You can only have one instance of bot`);
 
+        // Logger
+
+        // Make sure that the LoggerFactory is set up before anything else (if defined in modules array)
+
         // Basic
 
         const configService = new ConfigService(options);
         DIContainer.bind(DINames.ConfigService).toConstantValue(configService);
 
-        LoggerFactory.setConfig(configService);
+        // Old way of setting up logger - deprecated. Will be removed in future versions.
+        if(options.log) {
+            LoggerFactory.setConfig(configService);
+        }
         const logger = LoggerFactory.createLogger('TwitchBot');
 
         // userDefined
