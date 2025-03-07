@@ -1,6 +1,7 @@
 import DINames from "./DI.names";
 import ConfigService from "../services/Config.service";
 import { DIContainer } from "../di/Container";
+import { LogModuleForRootConfig } from "../types/Module.types";
 
 export enum LogLevel {
     NORMAL = 'normal',
@@ -9,6 +10,8 @@ export enum LogLevel {
     WARN = 'warn',
     INFO = 'info'
 }
+
+export const ALL_LOG_LEVELS = [LogLevel.NORMAL, LogLevel.DEBUG, LogLevel.ERROR, LogLevel.WARN, LogLevel.INFO];
 
 export enum ANSI_COLORS {
     reset = "\x1b[0m",
@@ -25,41 +28,60 @@ export enum ANSI_COLORS {
 
 export class LoggerFactory {
     private static _logger: Logger | null = null;
-    private static configService: ConfigService | null = null;
+    private static moduleConfig: LogModuleForRootConfig['levels'] | null = null;
 
     static get logger(): Logger {
-        if (LoggerFactory._logger === null) LoggerFactory._logger = new Logger('LoggerFactory');
+        if (LoggerFactory._logger === null) LoggerFactory._logger = new Logger('LoggerFactory', () => this.moduleConfig || []);
         return LoggerFactory._logger;
     }
 
+    /**
+     * @deprecated This method is deprecated and will be removed in future versions. Use `setModuleConfig` instead.
+     */
     public static setConfig(configService: ConfigService): void {
+        const levels = configService.getConfig().log?.levels
+
+        if(!levels) {
+            this.logger.error('No levels provided in config service');
+            return;
+        }
+
+        Logger.warn('========================================================');
+        Logger.warn(' You are using deprecated method to set config service. ');
+        Logger.warn('       Use `LogModule` instead of `log { levels }`      ');
+        Logger.warn('========================================================');
+
         this.logger.debug('Setting config service');
-        this.configService = configService
+        this.moduleConfig = levels;
+    }
+
+    public static setModuleConfig(moduleConfig: LogModuleForRootConfig): void {
+        this.logger.debug('Setting config service');
+        this.moduleConfig = moduleConfig.levels;
     }
 
     public static createLogger(name: string, nameColor: ANSI_COLORS = ANSI_COLORS.cyan, messageColor: ANSI_COLORS = ANSI_COLORS.white): Logger {
         this.logger.debug(`Creating logger for ${name}`);
-        return new Logger(name, nameColor, messageColor, this.configService);
+        return new Logger(name, () => this.moduleConfig || [], nameColor, messageColor);
     }
 }
 
 export class Logger {
+    static warn(message: string): void {
+        console.warn(`\x1b[33m${message}\x1b[0m`);
+    }
+
     constructor(
         private readonly name: string,
+        private readonly enabledLevels: () => LogModuleForRootConfig['levels'],
         private readonly nameColor: ANSI_COLORS = ANSI_COLORS.cyan,
         private readonly messageColor: ANSI_COLORS = ANSI_COLORS.white,
-        private configService: ConfigService | null = null
     ) {
         
     }
 
     private canShowLogLevel(type: LogLevel): boolean {
-        if(!DIContainer.isBound(DINames.ConfigService)) return true;
-        this.configService = DIContainer.get(DINames.ConfigService);
-        if(this.configService === null) return true;
-        const config = this.configService.getConfig()
-        if (!config.log) return true;
-        if(config.log.levels.includes(type)) return true;
+        if(this.enabledLevels().includes(type)) return true;
         return false;
     }
 
