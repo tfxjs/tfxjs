@@ -6,10 +6,13 @@ import { ChatterUser } from "../../objects/TwitchUser.object";
 import { ChannelOptionsProvider } from "../../providers/ChannelOptions.provider";
 import { ChatCommandExecution, ChatCommandExecutionGuard, ChatCommandExecutionGuardAvaliableResults } from "../../types/ChatCommand.types";
 
-@ChatCommand(CommandsModule.forFeature({
-    name: 'ChangePrefixCommand',
-    keyword: 'prefix'
-}))
+// @ChatCommand(CommandsModule.forFeature({
+//     name: 'ChangePrefixCommand',
+//     keyword: 'prefix'
+// }))
+/**
+ * @deprecated This command is just for testing purposes. It wont be working in production.
+ */
 export default class PrefixCommand implements ChatCommandExecution, ChatCommandExecutionGuard {
     guard(
         @MessageUser() chatter: ChatterUser,

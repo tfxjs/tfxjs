@@ -13,7 +13,7 @@ import ConfigService from "../services/Config.service";
 import RateLimiterService from "../services/RateLimiter.service";
 import { TokenService } from "../services/Token.service";
 import DINames from "../utils/DI.names";
-import { LoggerFactory } from "../utils/Logger";
+import { LoggerFactory, LogLevel } from "../utils/Logger";
 import { IChannelOptionsProvider } from "./ChannelOptions.provider";
 import { ChatCommandExecution } from "./ChatCommand.types";
 import { ChatListenerExecution } from "./ChatListener.types";
@@ -103,3 +103,11 @@ export type ChatBotModuleForRootConfig = {
 }
 
 export type ChatBotModuleForFeatureConfig = {}
+
+// Log Module
+
+export type LogModuleForRootConfig = {
+    levels: LogLevel[];
+}
+
+export type LogModuleForFeatureConfig = {}
