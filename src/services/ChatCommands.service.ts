@@ -8,6 +8,7 @@ import ChatDataInjectorService from './ChatDataInjector.service';
 import APIClient from '../clients/Api.client';
 import { CommandsModuleForFeatureConfig } from '../types/Module.types';
 import { DIContainer } from '../di/Container';
+import Utils from '../utils/Utils';
 
 export default class ChatCommandsService {
     private static readonly chatCommandsContainer = GeneralContainer.getInstance<GeneralFactory, ChatCommandExecution>();
@@ -71,7 +72,66 @@ export default class ChatCommandsService {
             ChatCommandsService.getChatCommandsContainer().enable(command);
         });
 
+        this.checkCommandsOptionsConfig();
+
         this.logger.debug(`Initialized`);
+    }
+
+    private checkCommandsOptionsConfig(): void {
+        this.logger.debug(`Checking commands options config`);
+        const commands = this.getCommandRegistry().getRegisteredEntries();
+        const nameToKeywordsMap = commands.map((c) => ({
+            name: c.options.name,
+            keywords: this.getCommandKeywords(c, true),
+        }));
+
+        // Check name duplicates
+        const duplicatedNames = Utils.GetDuplicatedValues(nameToKeywordsMap.map((c) => c.name));
+        this.logger.debug(`All command names: ${nameToKeywordsMap.map((c) => c.name).join(', ')}`);
+        if (duplicatedNames.length != 0) {
+            const errorMessage = `Command names are duplicated: ${duplicatedNames.join(', ')}. You have to use unique names for each command.`;
+            this.logger.error(errorMessage);
+            throw new Error(errorMessage);
+        } else {
+            this.logger.debug(`No duplicated command names found.`);
+        }
+
+        // Check keyword duplicates (command-scope)
+        for (const nameToKeywordsItem of nameToKeywordsMap) {
+            const duplicatedKeywords = Utils.GetDuplicatedValues(nameToKeywordsItem.keywords);
+            this.logger.debug(`Command ${nameToKeywordsItem.name} has keywords: ${nameToKeywordsItem.keywords.join(', ')}`);
+            if (duplicatedKeywords.length != 0) {
+                const errorMessage = `Command ${nameToKeywordsItem.name} has duplicated keywords: ${duplicatedKeywords.join(', ')}. You should use unique keywords for each command.`;
+                this.logger.warn(errorMessage);
+            } else {
+                this.logger.debug(`Command ${nameToKeywordsItem.name} has unique keywords.`);
+            }
+        }
+
+        // Check keyword duplicates (global)
+        const allKeywords = this.getAllCommandsKeywords();
+        this.logger.debug(`All global keywords: ${allKeywords.join(', ')}`)
+        const duplicatedKeywords = Utils.GetDuplicatedValues(allKeywords);
+        if (duplicatedKeywords.length != 0) {
+            const errorMessage = `Global duplicated keywords: ${duplicatedKeywords.join(', ')}. You have to use unique keywords for each command in global scope.`;
+            this.logger.error(errorMessage);
+            throw new Error(errorMessage);
+        } else {;
+            this.logger.debug(`No global duplicated keywords found.`);
+        }
+    }
+
+    /**
+     * Get all keywords from all registered commands
+     * @returns All keywords
+     */
+    private getAllCommandsKeywords(): string[] {
+        if (this.allKeywords.length != 0) return this.allKeywords;
+
+        const commands = this.getCommandRegistry().getRegisteredEntries();
+        const keywords = commands.map((c) => this.getCommandKeywords(c)).flat();
+        this.allKeywords.push(...keywords);
+        return this.allKeywords;
     }
 
     getCommandRegistry(): GeneralRegistry<ChatCommandInstance, CommandsModuleForFeatureConfig> {
@@ -82,17 +142,6 @@ export default class ChatCommandsService {
         return ChatCommandsService.chatCommandsContainer;
     }
 
-    getAllKeywords(): string[] {
-        const commands = this.getCommandRegistry().getRegisteredEntries();
-        // If keywords are already cached, return them
-        if (this.allKeywords.length != 0 && commands.length != 0) return this.allKeywords;
-        // If not, cache them and return
-        const keywords = commands.map((c) => this.getKeywords(c)).flat();
-        if (this.detectDuplicates(keywords)) throw new Error(`Keywords are duplicated between commands`);
-        this.allKeywords.push(...keywords);
-        return this.allKeywords;
-    }
-
     async handleCommand(data: ChannelChatMessageEventData): Promise<void> {
         const channelOptions = await this.channelOptionsProvider.getChannelOptions(data.broadcaster_user_id);
         const commandPrefix = channelOptions.prefix;
@@ -101,7 +150,7 @@ export default class ChatCommandsService {
             return;
         }
 
-        const keywords = this.getAllKeywords();
+        const keywords = this.getAllCommandsKeywords();
 
         const message = data.message.text;
         const messageParts = message.split(' ');
@@ -154,28 +203,29 @@ export default class ChatCommandsService {
         }
     }
 
+    /**
+     * Get keywords-command map
+     * @returns Keywords without duplicates and corresponding command entry
+     */
     private getKeywordsCommandMap(): { keywords: string[]; entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig> }[] {
         const commands = this.getCommandRegistry().getRegisteredEntries();
-        const map = commands.map((entry) => {
-            return {
-                keywords: this.getKeywords(entry),
-                entry,
-            };
-        });
+        const map = commands.map((entry) => ({
+            keywords: this.getCommandKeywords(entry),
+            entry,
+        }));
         return map;
     }
 
-    private getKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig>): string[] {
+    /**
+     * Get command keywords
+     * @param entry Command entry
+     * @returns Command keywords (keyword + aliases)
+     */
+    private getCommandKeywords(entry: GeneralRegistryEntry<ChatCommandInstance, CommandsModuleForFeatureConfig>, withDuplicates: boolean = false): string[] {
         const keywords = [entry.options.keyword, ...entry.options.aliases].map((keyword) => {
             if (entry.options.ignoreCase) keyword = keyword.toLowerCase();
             return keyword;
         });
-        if (this.detectDuplicates(keywords)) throw new Error(`Keywords are duplicated in command '${entry.options.name}'`);
-        return keywords;
-    }
-
-    private detectDuplicates(keywords: string[]): boolean {
-        const uniqueKeywords = new Set(keywords);
-        return keywords.length != uniqueKeywords.size;
+        return withDuplicates ? keywords : Array.from(new Set(keywords));
     }
 }

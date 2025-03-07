@@ -6,6 +6,7 @@ import DINames from '../utils/DI.names';
 import ChatDataInjectorService from './ChatDataInjector.service';
 import { ListenersModuleForFeatureConfig } from '../types/Module.types';
 import { DIContainer } from '../di/Container';
+import Utils from '../utils/Utils';
 
 export default class ChatListenersService {
     private static readonly chatListenersContainer = GeneralContainer.getInstance<GeneralFactory, ChatListenerExecution>();
@@ -65,7 +66,28 @@ export default class ChatListenersService {
             ChatListenersService.getChatListenersContainer().enable(listener);
         });
 
+        this.checkListenersOptionsConfig();
+
         this.logger.debug('Initialized');
+    }
+
+    private checkListenersOptionsConfig(): void {
+        this.logger.debug(`Checking commands options config`);
+        const listeners = this.getListenersRegistry().getRegisteredEntries();
+        const nameToKeywordsMap = listeners.map((l) => ({
+            name: l.options.name
+        }));
+
+        // Check name duplicates
+        const duplicatedNames = Utils.GetDuplicatedValues(nameToKeywordsMap.map((c) => c.name));
+        this.logger.debug(`All listener names: ${nameToKeywordsMap.map((c) => c.name).join(', ')}`);
+        if (duplicatedNames.length != 0) {
+            const errorMessage = `Listener names are duplicated: ${duplicatedNames.join(', ')}. You have to use unique names for each listener.`;
+            this.logger.error(errorMessage);
+            throw new Error(errorMessage);
+        } else {
+            this.logger.debug(`No duplicated listener names found.`);
+        }
     }
 
     getListenersRegistry(): GeneralRegistry<ChatListenerInstance, ListenersModuleForFeatureConfig> {
