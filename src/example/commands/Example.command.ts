@@ -12,11 +12,14 @@ export type ChannelOptionsExtend = TChannelOptions<{
     eXampleExecutionCounter: number;
 }>;
 
-@ChatCommand(CommandsModule.forFeature({ 
-    name: 'example',
-    keyword: 'eXample',
-    ignoreCase: false
-}))
+// @ChatCommand(CommandsModule.forFeature({ 
+//     name: 'example',
+//     keyword: 'eXample',
+//     ignoreCase: false
+// }))
+/**
+ * @deprecated This command is just for testing purposes. It wont be working in production.
+ */
 export default class ExampleCommand implements ChatCommandExecutionGuard, ChatCommandPreExecution, ChatCommandExecution, ChatCommandPostExecution {
     async guard(@MessageUser() user: ChatterUser): Promise<ChatCommandExecutionGuardAvaliableResults> {
         if(user.isBroadcaster() || user.isModerator() || user.isVIP()) return { canAccess: true };

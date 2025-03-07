@@ -5,10 +5,13 @@ import { ChatMessage } from "../../objects/ChatMessage.object";
 import { ChatterUser, PartialTwitchUser } from "../../objects/TwitchUser.object";
 import { ChatListenerExecution } from "../../types/ChatListener.types";
 
-@ChatListener(ListenersModule.forFeature({
-    name: 'ShowMessage',
-    transient: true
-}))
+// @ChatListener(ListenersModule.forFeature({
+//     name: 'ShowMessage',
+//     transient: true
+// }))
+/**
+ * @deprecated This listener is just for testing purposes. It wont be working in production.
+ */
 export default class ShowMessageListener implements ChatListenerExecution {
     async execution(
         @SenderData() sender: PartialTwitchUser,
