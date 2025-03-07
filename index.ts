@@ -44,6 +44,7 @@ import {
 
 // ==========================
 //     Example Commands
+// TODO: Remove in future versions - @deprecated
 // ==========================
 import PingCommand from './src/example/commands/Ping.command';
 import ExampleCommand from './src/example/commands/Example.command';
@@ -58,6 +59,7 @@ import {
 
 // ==========================
 //     Example Listeners
+// TODO: Remove in future versions - @deprecated
 // ==========================
 import CounterListener from './src/example/listeners/Counter.listener';
 import ShowMessageListener from './src/example/listeners/ShowMessage.listener';
