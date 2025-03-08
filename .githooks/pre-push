@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Get the current branch name
+branch_name=$(git symbolic-ref --short HEAD)
+
+# Pattern: branch must start with one of the allowed categories,
+# followed by a slash and any text (according to the glob {category}/**/*)
+pattern="^(feat|fix|chore|refactor|docs|test|perf|ci|build|style|i18n|deps|security|revert)/.+$"
+
+if [[ ! $branch_name =~ $pattern ]]; then
+    echo "❌ ERROR: Branch name '$branch_name' does not meet the required format."
+    echo "Correct format: {category}/**/*"
+    echo "Allowed categories: feat, fix, chore, refactor, docs, test, perf, ci, build, style, i18n, deps, security, revert"
+    exit 1
+fi
+
+exit 0
