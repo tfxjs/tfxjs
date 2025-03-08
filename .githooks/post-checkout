@@ -1,0 +1,21 @@
+#!/bin/bash
+# Hook parameters:
+# $1 - previous HEAD
+# $2 - new HEAD
+# $3 - flag: 1 if it was a branch checkout, 0 if only files were updated
+
+# Run the check only on branch checkout (e.g., git checkout -b or git checkout <branch>)
+if [ "$3" -eq 1 ]; then
+    branch_name=$(git symbolic-ref --short HEAD)
+    # Pattern: {category}/**/*
+    # Allowed categories: feat, fix, chore, refactor, docs, test, perf
+    pattern="^(feat|fix|chore|refactor|docs|test|perf|ci|build|style|i18n|deps|security|revert)/.+$"
+
+    if [[ ! $branch_name =~ $pattern ]]; then
+        echo "⚠️ WARNING: Branch name '$branch_name' does not meet the expected format."
+        echo "Expected format: {category}/**/*"
+        echo "Allowed categories: feat, fix, chore, refactor, docs, test, perf, ci, build, style, i18n, deps, security, revert"
+    fi
+fi
+
+exit 0
