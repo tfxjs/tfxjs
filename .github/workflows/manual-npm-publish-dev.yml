@@ -1,4 +1,4 @@
-name: Publish Development to npm
+name: Manual Publish Development to npm
 on:
   workflow_dispatch:
 
