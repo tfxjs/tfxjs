@@ -33,7 +33,7 @@
         "dist"
     ],
     "scripts": {
-        "start": "npx ts-node local.ts",
+        "start": "npx ts-node local/index.ts",
         "test": "jest",
         "lint": "eslint 'src/**/*.{ts,tsx}'",
         "prettier": "prettier --write .",
@@ -62,7 +62,7 @@
         "@inversifyjs/container": "^1.5.3",
         "@inversifyjs/core": "^4.0.1",
         "add": "^2.0.6",
-        "axios": "^1.8.1",
+        "axios": "^1.8.2",
         "dotenv": "^16.4.7",
         "lodash": "^4.17.21",
         "qs": "^6.14.0",

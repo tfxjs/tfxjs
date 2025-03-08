@@ -1,0 +1,16 @@
+#!/bin/bash
+
+commit_msg_file=$1
+commit_msg=$(cat "$commit_msg_file")
+
+# Zmodyfikowane wyrażenie regularne, aby nawias był opcjonalny
+pattern="^(feat|fix|chore|refactor|docs|test|perf|ci|build|style|i18n|deps|security|revert)(\([^)]*\))?: .+"
+
+if ! echo "$commit_msg" | grep -Eq "$pattern"; then
+    echo "❌ ERROR: Commit message does not meet the required format."
+    echo "Correct format: {prefix}({any-text}): {any-text} or {prefix}: {any-text}"
+    echo "Allowed prefixes: feat, fix, chore, refactor, docs, test, perf, ci, build, style, i18n, deps, security, revert"
+    exit 1
+fi
+
+exit 0
