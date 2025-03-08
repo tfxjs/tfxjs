@@ -33,7 +33,7 @@
         "dist"
     ],
     "scripts": {
-        "start": "npx ts-node local.ts",
+        "start": "npx ts-node local/index.ts",
         "test": "jest",
         "lint": "eslint 'src/**/*.{ts,tsx}'",
         "prettier": "prettier --write .",
