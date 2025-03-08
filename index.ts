@@ -30,6 +30,11 @@ import Builders, {
 } from './src/builders/api/index';
 
 // ==========================
+//     API Client
+// ==========================
+import APIClient from './src/clients/Api.client';
+
+// ==========================
 //     Command Interfaces
 // ==========================
 import {  
@@ -180,6 +185,9 @@ export {
     SnoozeNextAdResponse,
     StartCommercialRequestConfigBuilder,
     StartCommercialResponse,
+
+    // API Client
+    APIClient,
 
     // Command Interfaces
     ChatCommandExecutionGuard,
