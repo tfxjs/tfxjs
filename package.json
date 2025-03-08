@@ -1,6 +1,6 @@
 {
     "name": "@tfxjs/tfxjs",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "A powerful and modular framework for building Twitch bots with Typescript/Javascript. Simplifies event management, Twitch API integration, and command handling, allowing developers to focus on core bot functionality. Features include built-in Twitch API REST/WebSocket support, automatic event handling, and an easy-to-use command system. Ideal for both beginners and advanced developers.",
     "author": "kajahl",
     "homepage": "https://github.com/tfxjs/tfxjs",
