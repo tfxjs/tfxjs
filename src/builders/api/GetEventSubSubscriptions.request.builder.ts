@@ -12,7 +12,7 @@ export type GetEventSubSubscriptionsResponse = {
     total_cost: number,
     max_total_cost: number,
     pagination: {
-        cursor: string
+        cursor?: string
     }
 }
 
