@@ -6,6 +6,7 @@ import ExampleCommand, { ChannelOptionsExtend } from './example/commands/Example
 import PrefixCommand from './example/commands/Prefix.command';
 import CounterListener from './example/listeners/Counter.listener';
 import ShowMessageListener from './example/listeners/ShowMessage.listener';
+import RefreshCommand from './example/commands/Refresh.command';
 
 dotenv.config();
 
@@ -16,9 +17,9 @@ const userRefreshToken = process.env.USER_REFRESH_TOKEN as string;
 
 class ListenChannelsProvider implements IListenChannelsProvider {
     private i = 0;
-    private channels: string[] = ['87576158', '474118438', '66250925', '82197170', '58462752'];
+    private channels: string[] = []; //['87576158', '474118438', '66250925', '82197170', '58462752'];
     async getChannelIds(): Promise<string[]> {
-        // return this.i++ % 2 == 0 ? this.channels : [];
+        // return this.i++ % 2 == 0 ? this.channels : Array.from({ length: 10 }, (_, index) => (index * 123 + 82197170 + this.i - 1).toString());
         return this.channels;
     }
 
@@ -59,7 +60,7 @@ class ChannelOptionsProvider implements IChannelOptionsProvider<ChannelOptionsEx
             tokenRepository: { useValue: new InMemoryTokenRepository(userId, userRefreshToken) },
         }),
           CommandsModule.forRoot({
-            commands: [PingCommand, ExampleCommand, PrefixCommand],
+            commands: [PingCommand, ExampleCommand, PrefixCommand, RefreshCommand],
           }),
         ListenersModule.forRoot({
             listeners: [CounterListener, ShowMessageListener],
