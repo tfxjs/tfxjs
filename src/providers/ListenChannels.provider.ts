@@ -3,6 +3,8 @@ import DINames from '../utils/DI.names';
 import { Logger, LoggerFactory } from '../utils/Logger';
 import ConfigService from '../services/Config.service';
 import { DIContainer } from '../di/Container';
+import APIClient from '../clients/Api.client';
+import { GetUsersResponse } from '../builders/api';
 
 export default class ListenChannelsProvider {
     private readonly channelProvider: IListenChannelsProvider;
@@ -96,11 +98,21 @@ export default class ListenChannelsProvider {
      * @param failedSubscriptions List of failed subscriptions {@link ListenChannelSubscriptionResult}
      * @param failedUnsubscriptions List of failed unsubscriptions {@link ListenChannelSubscriptionResult}
      */
-    handleFailedSubscriptions(failedSubscriptions: ListenChannelSubscriptionResult[], failedUnsubscriptions: ListenChannelSubscriptionResult[]): void {
+    async handleFailedSubscriptions(failedSubscriptions: ListenChannelSubscriptionResult[], failedUnsubscriptions: ListenChannelSubscriptionResult[]): Promise<void> {
         // https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
         // Kody: (202/400/401/403/409/429)
         this._lastChannelIds = this._lastChannelIds.filter((channel) => !failedSubscriptions.map(f => f.channel).includes(channel));
         if (failedSubscriptions.length > 0) {
+            const api = DIContainer.get<APIClient>(DINames.APIClient);
+            const users: GetUsersResponse["data"] = []
+
+            for (let i = 0; i < Math.ceil(failedSubscriptions.length / 100); i++) {
+                const ids = failedSubscriptions.slice(i * 100, (i + 1) * 100).map(fs => fs.channel);
+                const response = await api.getUsers({ ids });
+                users.push(...response);
+            }
+
+            const getUsername = (id: string) => users.find(u => u.id === id)?.login || `Not found`;
             const getDesc = (code: number) => {
                 switch (code) {
                     case 400: return 'Bad request: Request was malformed or missing fields';
@@ -111,7 +123,7 @@ export default class ListenChannelsProvider {
                     default: return 'Unknown';
                 }
             };
-            const lines = failedSubscriptions.map(fs => `${fs.channel} (${fs.code}: ${getDesc(fs.code)})`);
+            const lines = failedSubscriptions.map(fs => `${fs.channel} (${getUsername(fs.channel)}) (${fs.code}: ${getDesc(fs.code)})`);
             this.logger.warn(`Failed subscriptions:`);
             lines.forEach((line) => this.logger.warn(`- ${line}`));
         }
