@@ -264,3 +264,19 @@ export function getScopesForEvent<T extends MappedTwitchEventId>(eventId: T): Ev
     }
     return scopes as EventRequirementsMap[T]['requiredScopes'];
 }
+
+export enum EventSubSubscriptionStatus {
+    Enabled = 'enabled',
+    NotificationFailuresExceeded = 'notification_failures_exceeded',
+    ModeratorRemoved = 'moderator_removed',
+    VersionRemoved = 'version_removed',
+    BetaMaintenance = 'beta_maintenance',
+    WebsocketDisconnected = 'websocket_disconnected',
+    WebsocketFailedPingPong = 'websocket_failed_ping_pong',
+    WebsocketReceivedInpoundTraffic = 'websocket_received_inbound_traffic',
+    WebsocketConnectionUnused = 'websocket_connection_unused',
+    WebsocketConnectionError = 'websocket_connection_error',
+    WebsocketNetworkTimeout = 'websocket_network_timeout',
+    WebsocketNetworkError = 'websocket_network_error',
+    WebsocketFailedToReconnect = 'websocket_failed_to_reconnect',
+}
