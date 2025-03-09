@@ -4,6 +4,10 @@ Przejdź do [Polskiej wersji](https://github.com/tfxjs/tfxjs/blob/main/README_PL
 
 TFxJS is an advanced tool for creating bots on the Twitch platform. It aims to simplify event management, Twitch API integration and command handling, allowing developers to focus on implementing the bot's core logic. The framework provides an intuitive structure, modularity and easy configuration, making it an ideal choice for both novice and advanced bot developers.
 
+<p align="center">
+  <img src="https://github.com/tfxjs/.github/blob/main/TFxJS-logo-circle.png" alt="TFxJS Logo" width="300"/>
+</p>
+
 ## Features
 
 - **Easy integration with Twitch API** - ready-to-use modules for easy connection with Twitch API REST and WebSocket.
@@ -13,10 +17,6 @@ TFxJS is an advanced tool for creating bots on the Twitch platform. It aims to s
 ## Example repository
 
 If you want to see the framework in action, check out our sample repository: *[https://github.com/tfxjs/tfxjs-example](https://github.com/tfxjs/tfxjs-example)*. There you'll find a working example and instructions for configuration and implementation.
-
-## Installation
-
-( TO DO )
 
 ## Documentation and examples of use
 
