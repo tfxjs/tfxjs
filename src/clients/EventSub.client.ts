@@ -119,25 +119,33 @@ export default class EventSubClient {
         return response.data;
     }
 
-    private async list(userId: string, options: {userId?: string, status?: string, type?: MappedTwitchEventId}, after: string | null = null): Promise<GetEventSubSubscriptionsResponse> {
-        
-        // TODO: Handle pagination
-
+    private async list(userId: string, options: {userId?: string, status?: string, type?: MappedTwitchEventId}, after: string | null = null): Promise<Omit<GetEventSubSubscriptionsResponse, 'pagination'>> {
         const userTokenObject = await this.tokenService.getUserTokenById(userId);
         if (!userTokenObject) throw new NotFoundError('User token not found');
         const requestBuilder = new GetEventSubSubscriptionsRequestConfigBuilder().setClientId(this.config.getClientId()).setAccessToken(userTokenObject);
         if(options.userId !== undefined) requestBuilder.setUserId(options.userId);
         if(options.status !== undefined) requestBuilder.setStatus(options.status);
         if(options.type !== undefined) requestBuilder.setType(options.type);
+        if(after !== null) requestBuilder.setAfter(after);
         const requestConfig = requestBuilder.build();
+        
         const response = await axios.request<GetEventSubSubscriptionsResponse>(requestConfig);
         if (!requestBuilder.correctResponseCodes.includes(response.status)) {
             const errorMessage = `[${response.status}] Failed to get subscriptions user=${options.userId ? options.userId : '(any)'} type=${options.type ? options.type : '(any)'}, status=${options.status ? options.status : '(any)'} for user ${userId} `;
             this.logger.error(errorMessage);
             throw new Error(errorMessage);
         }
+
         const data = response.data;
         this.logger.debug(`Got ${data.data.length} subscriptions user=${options.userId ? options.userId : '(any)'} type=${options.type ? options.type : '(any)'}, status=${options.status ? options.status : '(any)'} for user ${userId}`);
+
+        const cursor = response.data.pagination.cursor;
+        if(cursor) {
+            this.logger.debug(`Getting next page of subscriptions...`);
+            const nextData = await this.list(userId, options, cursor);
+            data.data.push(...nextData.data);
+        }
+        
         return data;
     }
 
