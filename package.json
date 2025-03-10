@@ -59,7 +59,7 @@
         "typescript": "^5.7.2"
     },
     "dependencies": {
-        "@inversifyjs/container": "^1.5.3",
+        "@inversifyjs/container": "^1.5.4",
         "@inversifyjs/core": "^4.0.1",
         "add": "^2.0.6",
         "axios": "^1.8.2",
