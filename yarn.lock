@@ -507,10 +507,19 @@
     "@inversifyjs/core" "4.0.1"
     "@inversifyjs/reflect-metadata-utils" "1.1.0"
 
-"@inversifyjs/core@4.0.1", "@inversifyjs/core@^4.0.1":
+"@inversifyjs/core@4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-4.0.1.tgz#d87d013cc43af6a56ea73ee6b3810726df01abbc"
   integrity sha512-b+24NJhY8Pc0LsJowx62rtXOjT2Gnk62zJUJghUgWn8wz7f704Pjt5wzGqNn561rIG0Tc+AS623xbsphhhPLcg==
+  dependencies:
+    "@inversifyjs/common" "1.5.0"
+    "@inversifyjs/prototype-utils" "0.1.0"
+    "@inversifyjs/reflect-metadata-utils" "1.1.0"
+
+"@inversifyjs/core@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-5.2.0.tgz#cd4e27a8096c7156f0b80ecb07af8baa40c453d7"
+  integrity sha512-MMaHGGRjQWT9uAof63sbZyEhRl4XptEAE17DJwrgUcN9LsdIEvecKP3r53pE9VF88PFR41knUKKzagUBvWLHmw==
   dependencies:
     "@inversifyjs/common" "1.5.0"
     "@inversifyjs/prototype-utils" "0.1.0"
