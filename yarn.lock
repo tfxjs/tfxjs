@@ -498,16 +498,26 @@
   resolved "https://registry.yarnpkg.com/@inversifyjs/common/-/common-1.5.0.tgz#542cdb0cfc02e36cca5a19208af726ecf904d400"
   integrity sha512-Qj5BELk11AfI2rgZEAaLPmOftmQRLLmoCXgAjmaF0IngQN5vHomVT5ML7DZ3+CA5fgGcEVMcGbUDAun+Rz+oNg==
 
-"@inversifyjs/container@^1.5.3":
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/@inversifyjs/container/-/container-1.5.3.tgz#ad1e453acec1f4d96d8f91120a17312c4e10e4ff"
-  integrity sha512-c2PIWb01y7BdEbplMh2rDVmUs7bn7fGpr9OTClrpy9W6slghxy4yoeK/LovoFVsqxOJegYxNKfDz6TeAJ6jv9w==
+"@inversifyjs/container@^1.10.1":
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/container/-/container-1.10.1.tgz#31310756b976bcaf75262e8bba358d54f8b64576"
+  integrity sha512-wrgiCn4R50IJQO0QBqrobdyLpzYngQCHyTAnlvgzQIfxnKrAKGGEUdDQ2bLbZXq3313GVz/Jb5C4RuW7M55cvQ==
   dependencies:
     "@inversifyjs/common" "1.5.0"
-    "@inversifyjs/core" "4.0.1"
+    "@inversifyjs/core" "5.3.1"
+    "@inversifyjs/plugin" "0.2.0"
     "@inversifyjs/reflect-metadata-utils" "1.1.0"
 
-"@inversifyjs/core@4.0.1", "@inversifyjs/core@^4.0.1":
+"@inversifyjs/core@5.3.1":
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-5.3.1.tgz#7db8c99e5f3af6e215566cb09471cf8ea73aa3be"
+  integrity sha512-cWVuKb6bsULng+1RlDx/Tuq8/u5wkpHx5sSjeLsHTbNrIhd8V0FLjhET00aSzovxJLMz1dkCIMhF8HUrnboAOQ==
+  dependencies:
+    "@inversifyjs/common" "1.5.0"
+    "@inversifyjs/prototype-utils" "0.1.0"
+    "@inversifyjs/reflect-metadata-utils" "1.1.0"
+
+"@inversifyjs/core@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-4.0.1.tgz#d87d013cc43af6a56ea73ee6b3810726df01abbc"
   integrity sha512-b+24NJhY8Pc0LsJowx62rtXOjT2Gnk62zJUJghUgWn8wz7f704Pjt5wzGqNn561rIG0Tc+AS623xbsphhhPLcg==
@@ -515,6 +525,11 @@
     "@inversifyjs/common" "1.5.0"
     "@inversifyjs/prototype-utils" "0.1.0"
     "@inversifyjs/reflect-metadata-utils" "1.1.0"
+
+"@inversifyjs/plugin@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/plugin/-/plugin-0.2.0.tgz#03957c7d02803f32254a2ff2f8f8ffb05ec57eec"
+  integrity sha512-R/JAdkTSD819pV1zi0HP54mWHyX+H2m8SxldXRgPQarS3ySV4KPyRdosWcfB8Se0JJZWZLHYiUNiS6JvMWSPjw==
 
 "@inversifyjs/prototype-utils@0.1.0":
   version "0.1.0"
