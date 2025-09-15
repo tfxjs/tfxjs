@@ -498,16 +498,31 @@
   resolved "https://registry.yarnpkg.com/@inversifyjs/common/-/common-1.5.0.tgz#542cdb0cfc02e36cca5a19208af726ecf904d400"
   integrity sha512-Qj5BELk11AfI2rgZEAaLPmOftmQRLLmoCXgAjmaF0IngQN5vHomVT5ML7DZ3+CA5fgGcEVMcGbUDAun+Rz+oNg==
 
-"@inversifyjs/container@^1.5.3":
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/@inversifyjs/container/-/container-1.5.3.tgz#ad1e453acec1f4d96d8f91120a17312c4e10e4ff"
-  integrity sha512-c2PIWb01y7BdEbplMh2rDVmUs7bn7fGpr9OTClrpy9W6slghxy4yoeK/LovoFVsqxOJegYxNKfDz6TeAJ6jv9w==
-  dependencies:
-    "@inversifyjs/common" "1.5.0"
-    "@inversifyjs/core" "4.0.1"
-    "@inversifyjs/reflect-metadata-utils" "1.1.0"
+"@inversifyjs/common@1.5.2":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/common/-/common-1.5.2.tgz#6836287fef1c25dddbdf6af345a33a6d6caf6835"
+  integrity sha512-WlzR9xGadABS9gtgZQ+luoZ8V6qm4Ii6RQfcfC9Ho2SOlE6ZuemFo7PKJvKI0ikm8cmKbU8hw5UK6E4qovH21w==
 
-"@inversifyjs/core@4.0.1", "@inversifyjs/core@^4.0.1":
+"@inversifyjs/container@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/container/-/container-1.13.0.tgz#3ce992904c8b348a8d5c4ce8eff6987334d2f514"
+  integrity sha512-bnacT6u3oihcGoUKhy2RTB96QPA/2CQHgiXYNpN4Ydd21SeN4FfDrZKu0TQf0uHMOSDc5mCi3PUifje7M/61qg==
+  dependencies:
+    "@inversifyjs/common" "1.5.2"
+    "@inversifyjs/core" "9.0.0"
+    "@inversifyjs/plugin" "0.2.0"
+    "@inversifyjs/reflect-metadata-utils" "1.4.0"
+
+"@inversifyjs/core@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-9.0.0.tgz#3b2f40ee230d1df693e028d7490e82c6251d78e1"
+  integrity sha512-V/s1iM4hhUkJfRZoq5LCVKKXztO5rvBJi4og8arcfK1k3DInL08/HJ5rG/dPZz5f2reBbGM0KzVxyz3/rIySvQ==
+  dependencies:
+    "@inversifyjs/common" "1.5.2"
+    "@inversifyjs/prototype-utils" "0.1.2"
+    "@inversifyjs/reflect-metadata-utils" "1.4.0"
+
+"@inversifyjs/core@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@inversifyjs/core/-/core-4.0.1.tgz#d87d013cc43af6a56ea73ee6b3810726df01abbc"
   integrity sha512-b+24NJhY8Pc0LsJowx62rtXOjT2Gnk62zJUJghUgWn8wz7f704Pjt5wzGqNn561rIG0Tc+AS623xbsphhhPLcg==
@@ -516,6 +531,11 @@
     "@inversifyjs/prototype-utils" "0.1.0"
     "@inversifyjs/reflect-metadata-utils" "1.1.0"
 
+"@inversifyjs/plugin@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/plugin/-/plugin-0.2.0.tgz#03957c7d02803f32254a2ff2f8f8ffb05ec57eec"
+  integrity sha512-R/JAdkTSD819pV1zi0HP54mWHyX+H2m8SxldXRgPQarS3ySV4KPyRdosWcfB8Se0JJZWZLHYiUNiS6JvMWSPjw==
+
 "@inversifyjs/prototype-utils@0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@inversifyjs/prototype-utils/-/prototype-utils-0.1.0.tgz#1378596f3d708244f390e9b233599b862aba450d"
@@ -523,10 +543,22 @@
   dependencies:
     "@inversifyjs/common" "1.5.0"
 
+"@inversifyjs/prototype-utils@0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/prototype-utils/-/prototype-utils-0.1.2.tgz#2ff5241c2f50772b3202ad5f052b84852eedd8d3"
+  integrity sha512-WZAEycwVd8zVCPCQ7GRzuQmjYF7X5zbjI9cGigDbBoTHJ8y5US9om00IAp0RYislO+fYkMzgcB2SnlIVIzyESA==
+  dependencies:
+    "@inversifyjs/common" "1.5.2"
+
 "@inversifyjs/reflect-metadata-utils@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@inversifyjs/reflect-metadata-utils/-/reflect-metadata-utils-1.1.0.tgz#193ab71b92d47a8073e65e5bab640762bc435dcb"
   integrity sha512-jmuAuC3eL1GnFAYfJGJOMKRDL9q1mgzOyrban6zxfM8Yg1FUHsj25h27bW2G7p8X1Amvhg3MLkaOuogszkrofA==
+
+"@inversifyjs/reflect-metadata-utils@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@inversifyjs/reflect-metadata-utils/-/reflect-metadata-utils-1.4.0.tgz#3c1028eadca30e98258c512dcee52188068d8f58"
+  integrity sha512-J+Wb0dcFEkdCtPODH7dG/EwWyaEGIj/RPoBHrH4A8dxaV8QdJ97rSDnHk7nbJ/KKZ2K0lI+7J+POA6EGNd8V3w==
 
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
